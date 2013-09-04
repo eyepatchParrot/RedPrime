@@ -15,8 +15,8 @@ function createPlayerCharacter()
 	%pc.hp = 1.0;
 	
 	%controls = ShooterControlsBehavior.createInstance();
-	%controls.verticalSpeed = 2.0;
-	%controls.horizontalSpeed = 2.0;
+	%controls.verticalSpeed = 2.5;
+	%controls.horizontalSpeed = 2.5;
 	%controls.upKey = "keyboard w";
 	%controls.downkey = "keyboard s";
 	%controls.leftKey = "keyboard a";
@@ -47,17 +47,20 @@ function PlayerCharacter::shoot(%this)
 			if (!%this.isWeaponBoosted)
 			{
 				%reloadTime = %this.shotFreq;
+				alxPlay("ToyAssets:CannonTowerFireSound");
 			}
 			else
 			{
 				createBulletAt(%this.Position, %angle + 10.0);
 				createBulletAt(%this.Position, %angle - 10.0);
 				%reloadTime = %this.shotFreq;
+				alxPlay("ToyAssets:VolleyTowerFireSound");
 			}
 			
 			%this.schedule(%reloadTime, reload);
 			%this.canShoot = false;
 			%this.rotateTo(%angle + 180, %this.turnSpeed);
+			
 		}
 		%this.schedule(100, shoot);
 	}
@@ -98,6 +101,7 @@ function PlayerCharacter::pickup( %this, %pickup)
 		%this.setWeaponBoosted( true );
 		cancel(%this.disableBoostSchedule);
 		%this.disableBoostSchedule = %this.schedule(5000, setWeaponBoosted, false );
+		alxPlay("ToyAssets:TowerUpgradeSound");
 	}
 	%pickup.safeDelete();
 }
@@ -125,4 +129,5 @@ function PlayerCharacter::die( %this )
 	mainScene.add( %deathAnimation );
 	%this.schedule(32, "safeDelete" );
 	FireAndIce.schedule(2000, "startLoseMenu");
+	alxPlay("ToyAssets:KnightDeathSound");
 }

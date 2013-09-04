@@ -9,7 +9,7 @@ function createBulletAt(%position, %angle)
 	%bullet.Size = "0.5 0.5";
 	%bullet.SceneLayer = 3;
 	%bullet.SceneGroup = $Game::BulletDomain;
-	%bullet.createPolygonBoxCollisionShape(); // change to circle
+	%bullet.createCircleCollisionShape(0.1);
 	%bullet.setFixedAngle( true );
 	%bullet.setLinearVelocityPolar(%angle, 10.0);
 	%bullet.setAngle( %angle + 180 );
@@ -24,5 +24,8 @@ function createBulletAt(%position, %angle)
 
 function Bullet::onCollision(%this, %sceneObject, %collisionDetails)
 {
-	%this.safeDelete();
+//	if ( !%sceneObject.getCollisionSuppress() == true )
+//	{
+		%this.safeDelete();
+//	}
 }

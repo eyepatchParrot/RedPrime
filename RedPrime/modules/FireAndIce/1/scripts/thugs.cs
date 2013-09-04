@@ -21,8 +21,7 @@ function createThug(%position)
 	%moveAi = MoveTowardBehavior.createInstance();
 	%moveAi.targetObject = PlayerCharacter;
 	%moveAi.startPosition = %position;
-	%moveAi.horizontalSpeed = 0.9;
-	%moveAi.verticalSpeed = 0.9;
+	%moveAi.moveSpeed = 2.0;
 	%s.addBehavior(%moveAi);
 	
 	/*%imageUpdate = UpdateImageBehavior.createInstance();
@@ -73,4 +72,7 @@ function Thug::die( %this )
 	mainScene.add( %deathAnimation );
 	%this.onDeath();
 	%this.schedule(32, "safeDelete");
+	alxPlay("ToyAssets:BarbarianDeathSound");
+	//%this.safeDelete();
+	//%this.setCollisionSuppress( true );
 }

@@ -33,6 +33,7 @@ function DropPickupBehavior::onDeath( %this )
 function DropPickupBehavior::spawnPickup( %this )
 {
 	%pickup = new Sprite();
+	%pickup.setBodyType( dynamic );
 	%pickup.setPosition( %this.owner.getPosition() );
 	%pickup.setSize( 1, 1 );
 	%pickup.setSceneLayer( 3 );
@@ -42,6 +43,7 @@ function DropPickupBehavior::spawnPickup( %this )
 	%pickup.setLifetime( 5.0 );
 	%pickup.class = %this.pickupClass;
 	%pickup.setImage(%this.pickupImage, %this.pickupImageFrame);
+	%pickup.setDefaultDensity(0.1, true);
 	mainScene.add( %pickup );
 }
 		

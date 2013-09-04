@@ -170,6 +170,7 @@ if (!isObject(BlueButtonProfile)) new GuiControlProfile (BlueButtonProfile : Gui
     fontColor = "255 255 255 255";
     fontColorHL = "255 255 255 255";
     bitmap = "modules/FireAndIce/1/gui/images/blueButton.png";
+	soundButtonDown="ToyAssets:buttonSound";
 };
 
 //-----------------------------------------------------------------------------

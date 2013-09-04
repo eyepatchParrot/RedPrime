@@ -33,7 +33,7 @@ function MoveTowardBehavior::updateDirection(%this)
 		%targetX = getWord(%this.targetObject.getPosition(), 0);
 		%targetY = getWord(%this.targetObject.getPosition(), 1);
 		
-		%this.owner.moveTo(%targetX SPC %targetY, %this.verticalSpeed);
+		%this.owner.moveTo(%targetX SPC %targetY, %this.moveSpeed, true, false);
 		%this.owner.rotateTo(getWord(%this.owner.getLinearVelocityPolar(), 0), 200.0);
 	}
 	%this.updateEvent = %this.schedule(%this.freq, updateDirection);

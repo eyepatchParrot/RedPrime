@@ -39,31 +39,16 @@ function SpawnManager::spawnNextWave(%this)
 {
 	%this.waveNum++;
 	updateHud();
-	switch (%this.waveNum)
-	{
-		case 1:
-			%this.spawnNewWaveAtAllZones( 10, 1500 );
-			%this.schedule(25000, spawnNextWave);
-		
-		case 2:
-			%this.spawnNewWaveAtAllZones( 12, 1250 );
-			%this.schedule(25000, spawnNextWave);
-			
-		case 3:
-			%this.spawnNewWaveAtAllZones( 14, 1250 );
-			%this.schedule(27000, spawnnextWave);
-			
-		case 4:
-			%this.spawnNewWaveAtAllZones( 16, 1125 );
-			%this.schedule(27000, spawnNextWave);
-			
-		case 5:
-			%this.spawnNewWaveAtAllZones( 18, 1125 );
-			%this.schedule(29000, spawnNextWave);
-		
-		default:
-			// you win
-	}
+	
+	%baseNumEnemies = 5;
+	%baseSpawnTime = 1000;
+	%difficultyInc = 0.1;
+	%difficultyMul = 1 + %difficultyInc * (%this.waveNum - 1);
+	%numEnemies = %baseNumEnemies * %difficultyMul;
+	%spawnTime = %baseSpawnTime / %difficultyMul;
+	%waveTime = %numEnemies * %spawnTime + 8000;
+	%this.spawnNewWaveAtAllZones( %numEnemies, %spawnTime);
+	%this.schedule( %waveTime, spawnNextWave );
 }
 
 function SpawnManager::spawnNewWaveAtAllZones( %this, %numEnemies, %freq )
