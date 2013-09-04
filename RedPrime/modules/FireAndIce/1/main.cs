@@ -87,6 +87,7 @@ function FireAndIce::create( %this )
 function FireAndIce::destroy( %this )
 {
 	InputManager.delete();
+	alxStopAll();
 }
 
 //-----------------------------------------------------------------------------
@@ -118,6 +119,8 @@ function FireAndIce::startGame( %this )
 	mainWindow.mount(PlayerCharacter);
 	
 	mainWindow.addInputListener(InputManager);
+	
+	alxPlay("ToyAssets:level1Music");
 }
 
 //-----------------------------------------------------------------------------
