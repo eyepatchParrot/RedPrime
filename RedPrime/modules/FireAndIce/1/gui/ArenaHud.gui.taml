@@ -1,0 +1,27 @@
+<GuiControl
+	Name="ArenaHud"
+	Profile="HudDialogProfile"
+	HorizSizing="left"
+    VertSizing="bottom"
+	Visible="1" >
+	
+	<GuiControl
+		Profile="HudBackgroundProfile"
+		Position = "860 0"
+		Extent="100 100"
+		Visible="1" />
+	
+	<GuiProgressCtrl
+		Name="LifeIndicator"
+		Profile="HudLifeProfile"
+		Position="870 10"
+		Extent="80 30"
+		Visible="1" />
+		
+	<GuiTextCtrl
+		Name="HudWaveText"
+		Profile="HudTextProfile"
+		Position="870 30"
+		Text="Wave : 0"
+		Visible="1" />
+</GuiControl>

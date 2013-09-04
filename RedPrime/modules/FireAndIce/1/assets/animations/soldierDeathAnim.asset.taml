@@ -1,0 +1,6 @@
+<AnimationAsset
+    AssetName="soldierDeathAnim"
+    Image="@asset=FireAndIce:soldier"
+    AnimationFrames="15"
+    AnimationTime="0.1"
+	AnimationCycle="0" />

@@ -1,0 +1,13 @@
+<ModuleDefinition
+	ModuleId="fireAndIce"
+	VersionId="1"
+	Description="Two-week game for Fire and Ice"
+	Dependencies="AppCore=1,ToyAssets=1"
+	ScriptFile="main.cs"
+	CreateFunction="create"
+	DestroyFunction="destroy">
+		<DeclaredAssets
+			Path="assets"
+			Extension="asset.taml"
+			Recurse="true"/>
+</ModuleDefinition>
