@@ -48,7 +48,7 @@ function SpawnManager::spawnNextWave(%this)
 	%spawnTime = %baseSpawnTime / %difficultyMul;
 	%waveTime = %numEnemies * %spawnTime + 8000;
 	%this.spawnNewWaveAtAllZones( %numEnemies, %spawnTime);
-	%this.schedule( %waveTime, spawnNextWave );
+	%this.waveSpawn = %this.schedule( %waveTime, spawnNextWave );
 }
 
 function SpawnManager::spawnNewWaveAtAllZones( %this, %numEnemies, %freq )

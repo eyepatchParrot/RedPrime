@@ -9,7 +9,7 @@ function createThug(%position)
 	%s.Size = "1.5 1.5";
 	%s.SceneLayer = 2;
 	%s.SceneGroup = $Game::ThugDomain;
-	%s.Image = "FireAndIce:enemy";
+	%s.Image = "ToyAssets:TD_Barbarian_CompSprite";
 	%halfHeight = %s.getHeight() / 2.0;
 	%s.createPolygonBoxCollisionShape(%s.getWidth() SPC %s.getHeight());
 	%s.setCollisionGroups( $Game::PlayerDomain, $Game::BulletDomain, $Game::ThugDomain );

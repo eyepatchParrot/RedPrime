@@ -217,3 +217,8 @@ if ( !isObject(LoseTextProfile) ) new GuiControlProfile (LoseTextProfile : GuiDe
 {
 	justify = "center";
 };
+
+if ( !isObject(MainBackgroundProfile) ) new GuiControlProfile (MainBackgroundProfile : GuiBackgroundProfile)
+{
+	//bitmap="@asset=FireAndIce:mainMenuBg";
+};

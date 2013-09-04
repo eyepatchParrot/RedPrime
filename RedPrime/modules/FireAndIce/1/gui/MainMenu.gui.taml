@@ -1,0 +1,21 @@
+<GuiControl
+	Name="MainMenu"
+	Profile="GuiDefaultProfile" >
+	
+	<GuiSpriteCtrl
+		Name="MainMenuBackground"
+		Profile="MainBackgroundProfile"
+		Position="0 0"
+		Extent="960 640"
+		Image="FireAndIce:mainMenuBg"
+		Visible="1" />
+		
+	<GuiButtonCtrl
+		Name="PlayButton"
+		Profile="BlueButtonProfile"
+		Position="430 600"
+		Extent="100 30"
+		text="Play"
+		Command="FireAndIce.startGame();"
+		Visible="1" />
+</GuiControl>

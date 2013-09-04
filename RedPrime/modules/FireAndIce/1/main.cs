@@ -50,6 +50,7 @@ function FireAndIce::create( %this )
 	LifeIndicator.setValue(0.5);
 	
 	%this.add( TamlRead("./gui/LoseMenu.gui.taml") );
+	%this.add( TamlRead("./gui/MainMenu.gui.taml") );
 	
 	// We need a main "Scene" we can use as our game world.  The place where sceneObjects play.
     // Give it a global name "mainScene" since we may want to access it directly in our scripts.
@@ -64,22 +65,11 @@ function FireAndIce::create( %this )
     new SceneWindow(mainWindow);
     mainWindow.profile = GuiDefaultProfile;
     Canvas.setContent(mainWindow);
-	Canvas.pushDialog(ArenaHud);
-
-    // Finally, connect our scene into the viewport (or sceneWindow).
-    // Note that a viewport comes with a camera built-in.
-    mainWindow.setScene(mainScene);
-    mainWindow.setCameraPosition( 0, 0 );
-    mainWindow.setCameraSize( $Game::ScreenWidth, $Game::ScreenHeight );
-	%viewRight = $Game::ArenaWidth / 2.0;
-	%viewLeft = -%viewRight;
-	%viewTop = $Game::ArenaHeight / 2.0;
-	%viewLow = -%viewTop;
-	mainWindow.setViewLimitOn( %viewLeft SPC %viewLow SPC %viewRight SPC %viewTop );
 	
 	new ScriptObject(InputManager);
 	
-	%this.startGame();
+	%this.startMainMenu();
+	//%this.startGame();
 }
 
 //-----------------------------------------------------------------------------
@@ -106,8 +96,32 @@ function FireAndIce::loadPreferences( %this )
 
 //-----------------------------------------------------------------------------
 
+function FireAndIce::startMainMenu( %this )
+{
+	Canvas.pushDialog( MainMenu );
+	alxStopAll();
+	alxPlay("ToyAssets:titleMusic");
+}
+
+//-----------------------------------------------------------------------------
+
 function FireAndIce::startGame( %this )
 {
+	Canvas.popDialog( LoseMenu );
+	Canvas.popDialog( MainMenu );
+	Canvas.pushDialog(ArenaHud);
+
+    // Finally, connect our scene into the viewport (or sceneWindow).
+    // Note that a viewport comes with a camera built-in.
+    mainWindow.setScene(mainScene);
+    mainWindow.setCameraPosition( 0, 0 );
+    mainWindow.setCameraSize( $Game::ScreenWidth, $Game::ScreenHeight );
+	%viewRight = $Game::ArenaWidth / 2.0;
+	%viewLeft = -%viewRight;
+	%viewTop = $Game::ArenaHeight / 2.0;
+	%viewLow = -%viewTop;
+	mainWindow.setViewLimitOn( %viewLeft SPC %viewLow SPC %viewRight SPC %viewTop );
+
 	Canvas.popDialog(loseMenu);
 	mainScene.clear();
 	mainScene.setScenePause( false );
@@ -129,5 +143,6 @@ function FireAndIce::startGame( %this )
 function FireAndIce::startLoseMenu( %this )
 {
 	mainScene.setScenePause( true );
+	cancel(SpawnManager.waveSpawn);
 	Canvas.pushDialog(LoseMenu);
 }
