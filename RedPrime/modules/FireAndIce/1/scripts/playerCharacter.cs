@@ -47,7 +47,7 @@ function PlayerCharacter::shoot(%this)
 			if (!%this.isWeaponBoosted)
 			{
 				%reloadTime = %this.shotFreq;
-				alxPlay("ToyAssets:CannonTowerFireSound");
+				alxPlay("FireAndIce:ShotSound");
 			}
 			else
 			{

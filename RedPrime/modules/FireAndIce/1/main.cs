@@ -100,7 +100,7 @@ function FireAndIce::startMainMenu( %this )
 {
 	Canvas.pushDialog( MainMenu );
 	alxStopAll();
-	alxPlay("ToyAssets:titleMusic");
+	alxPlay("FireAndIce:GameMusic");
 }
 
 //-----------------------------------------------------------------------------
@@ -135,7 +135,7 @@ function FireAndIce::startGame( %this )
 	mainWindow.addInputListener(InputManager);
 	
 	alxStopAll();
-	alxPlay("ToyAssets:level1Music");
+	alxPlay("FireAndIce:GameMusic");
 }
 
 //-----------------------------------------------------------------------------
