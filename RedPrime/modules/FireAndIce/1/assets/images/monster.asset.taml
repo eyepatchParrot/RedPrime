@@ -1,0 +1,7 @@
+<ImageAsset
+	AssetName="monster"
+	ImageFile="monster_origres.png"
+	CellCountX="4"
+    CellCountY="2"
+    CellWidth="54"
+    CellHeight="54"	/>

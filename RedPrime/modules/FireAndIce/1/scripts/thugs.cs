@@ -9,9 +9,8 @@ function createThug(%position)
 	%s.Size = "1.5 1.5";
 	%s.SceneLayer = 2;
 	%s.SceneGroup = $Game::ThugDomain;
-	%s.Image = "ToyAssets:TD_Barbarian_CompSprite";
-	%halfHeight = %s.getHeight() / 2.0;
-	%s.createPolygonBoxCollisionShape(%s.getWidth() SPC %s.getHeight());
+	%s.playAnimation( "FireAndIce:monsterAnim" );
+	%s.createCircleCollisionShape(0.5);
 	%s.setCollisionGroups( $Game::PlayerDomain, $Game::BulletDomain, $Game::ThugDomain );
 	%s.setFixedAngle( true );
 	
@@ -65,7 +64,7 @@ function Thug::die( %this )
 	%deathAnimation.setLifeTime(2.0);
 	%deathAnimation.setPosition(%this.Position);
 	%deathAnimation.setSize(%this.Size);
-	%deathAnimation.playAnimation("ToyAssets:TD_Barbarian_Death");
+	%deathAnimation.playAnimation("FireAndIce:monsterDeathAnim");
 	%deathAnimation.setBodyType( static );
 	%deathAnimation.setCollisionSuppress( true );
 	%deathAnimation.setSceneLayer(4);

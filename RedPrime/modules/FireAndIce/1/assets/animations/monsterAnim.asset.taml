@@ -1,0 +1,5 @@
+<AnimationAsset
+    AssetName="monsterAnim"
+    Image="@asset=FireAndIce:monster"
+    AnimationFrames="0 1 2 1"
+    AnimationTime="0.75" />
