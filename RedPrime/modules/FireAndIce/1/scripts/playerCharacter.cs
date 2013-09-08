@@ -124,7 +124,7 @@ function PlayerCharacter::die( %this )
 	%deathAnimation.setLifetime(2.0);
 	%deathAnimation.setPosition( %this.getPosition() );
 	%deathAnimation.setSize( %this.getSize() );
-	%deathAnimation.playAnimation( "FireAndIce:soldierDeathAnim" );
+	%deathAnimation.setImage( "FireAndIce:redDead" );
 	%deathAnimation.setBodyType( static );
 	%deathAnimation.setCollisionSuppress( true );
 	%deathAnimation.setSceneLayer( 3 );
