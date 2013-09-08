@@ -14,6 +14,7 @@ if ( !isObject(MoveAnimationBehavior) )
 function MoveAnimationBehavior::onBehaviorAdd(%this)
 {
 	%this.wasMoving = false;
+	%this.owner.setImage(%this.idleImage);
 	%this.updateAnimation();
 }
 

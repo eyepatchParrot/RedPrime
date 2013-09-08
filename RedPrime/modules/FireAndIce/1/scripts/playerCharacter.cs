@@ -6,7 +6,7 @@ function createPlayerCharacter()
 	%pc.Size = "1 1";
 	%pc.SceneLayer = 1;
 	%pc.SceneGroup = $Game::PlayerDomain;
-	%pc.Image = "FireAndIce:Soldier";
+	// %pc.Image = "FireAndIce:Soldier";
 	%pc.createCircleCollisionShape(0.3);
 	%pc.setCollisionGroups( $Game::ThugDomain, $Game::BoundaryDomain, $Game::PickupDomain );
 	%pc.setFixedAngle( true );
@@ -24,6 +24,8 @@ function createPlayerCharacter()
 	%pc.addBehavior(%controls);
 	
 	%moveAnim = MoveAnimationBehavior.createInstance();
+	%moveAnim.idleImage = "FireAndIce:redWalk";
+	%moveAnim.walkAnimation = "FireAndIce:redWalkAnim";
 	%pc.addBehavior(%moveAnim);
 	
 	%pc.targetPosition = "0 0";

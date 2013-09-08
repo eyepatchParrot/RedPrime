@@ -1,0 +1,7 @@
+<ImageAsset
+	AssetName="redWalk"
+	ImageFile="RedWalk_condensed.png"
+	CellCountX="5"
+	CellCountY="1"
+	CellWidth="42"
+	CellHeight="54" />
