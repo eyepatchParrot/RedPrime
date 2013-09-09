@@ -2,6 +2,6 @@
 	AssetName="redWalk"
 	ImageFile="RedWalk_condensed.png"
 	CellCountX="5"
-	CellCountY="1"
+	CellCountY="2"
 	CellWidth="42"
-	CellHeight="54" />
+	CellHeight="61" />

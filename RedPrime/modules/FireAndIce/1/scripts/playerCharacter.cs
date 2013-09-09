@@ -3,7 +3,7 @@ function createPlayerCharacter()
 	%pc = new Sprite(PlayerCharacter);
 	%pc.setBodyType( dynamic );
 	%pc.Position = "0 0";
-	%pc.Size = "0.9 0.9";
+	%pc.Size = "0.7 1.0";
 	%pc.SceneLayer = 1;
 	%pc.SceneGroup = $Game::PlayerDomain;
 	// %pc.Image = "FireAndIce:Soldier";
@@ -24,9 +24,12 @@ function createPlayerCharacter()
 	%pc.addBehavior(%controls);
 	
 	%moveAnim = MoveAnimationBehavior.createInstance();
-	%moveAnim.idleImage = "FireAndIce:redWalk";
+	%moveAnim.idleAnimation = "FireAndIce:redIdleAnim";
 	%moveAnim.walkAnimation = "FireAndIce:redWalkAnim";
 	%pc.addBehavior(%moveAnim);
+	%pc.moveAnimBehavior = %moveAnim;
+	
+	%pc.setShootAnim( false );
 	
 	%pc.targetPosition = "0 0";
 	%pc.shotFreq = 500;
@@ -44,8 +47,7 @@ function PlayerCharacter::shoot(%this)
 	{
 		if ( %this.canShoot)
 		{
-			%angle = Vector2AngleToPoint(%this.Position, %this.targetPosition);
-			createBulletAt(%this.Position, %angle);
+			%this.shootOneBullet( 0.0 );
 			if (!%this.isWeaponBoosted)
 			{
 				%reloadTime = %this.shotFreq;
@@ -53,19 +55,45 @@ function PlayerCharacter::shoot(%this)
 			}
 			else
 			{
-				schedule(80, 0, createBulletAt, %this.Position, %angle + 10.0);
-				schedule(160, 0, createBulletAt, %this.Position, %angle - 10.0);
+				%this.schedule(80, shootOneBullet, 10.0);
+				%this.schedule(160, shootOneBullet, -10.0);
 				%reloadTime = %this.shotFreq;
 				alxPlay("FireAndIce:SuperShotSound");
 			}
 			
 			%this.schedule(%reloadTime, reload);
 			%this.canShoot = false;
-			%this.rotateTo(%angle + 180, %this.turnSpeed);
-			
 		}
 		%this.schedule(100, shoot);
 	}
+}
+
+function PlayerCharacter::shootOneBullet( %this, %angleOffset )
+{
+	%angle = Vector2AngleToPoint(%this.Position, %this.targetPosition);
+	createBulletAt(%this.Position, %angle + %angleOffset);
+	%this.setShootAnim( true );
+	cancel( %this.shootAnimSchedule );
+	%this.shootAnimSchedule = %this.schedule( 32, setShootAnim, false );
+	%this.rotateTo(%angle + 180, %this.turnSpeed);
+}
+
+function PlayerCharacter::setShootAnim( %this, %on )
+{
+	if ( %on )
+	{
+		%idleAnim = "FireAndIce:redIdleShootAnim";
+		%walkAnim = "FireAndIce:redWalkShootAnim";
+	}
+	else
+	{
+		%idleAnim = "FireAndIce:redIdleAnim";
+		%walkAnim = "FireAndIce:redWalkAnim";
+	}
+	
+	%this.moveAnimBehavior.idleAnimation = %idleAnim;
+	%this.moveAnimBehavior.walkAnimation = %walkAnim;
+	%this.moveAnimBehavior.updateAnimation();
 }
 
 function PlayerCharacter::reload( %this )

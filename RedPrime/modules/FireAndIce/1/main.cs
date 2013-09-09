@@ -67,6 +67,8 @@ function FireAndIce::create( %this )
 	
 	new ScriptObject(InputManager);
 	
+	%this.turnSoundOn( $Game::soundOn );
+	
 	%this.startMainMenu();
 	//%this.startGame();
 }
@@ -156,25 +158,26 @@ function FireAndIce::turnSoundOn( %this, %on )
 	
 	if ( %on )
 	{
-		alxSetChannelVolume(0, 1.0);
+		//alxSetChannelVolume(0, 1.0);
 		alxSetChannelVolume(1, 1.0);
 		SoundButton.setNormalImage( %onImg );
 		SoundButton.setHoverImage( %offImg );
 	}
 	else
 	{
-		alxSetChannelVolume(0, 0.0);
+		//alxSetChannelVolume(0, 0.0);
+		alxSetChannelVolume(0, 0.7);
 		alxSetChannelVolume(1, 0.0);
 		SoundButton.setNormalImage( %offImg );
 		SoundButton.setHoverImage( %onImg );
 	}
+	
+	$Game::soundOn = %on;
 }
 
 //-----------------------------------------------------------------------------
 
 function FireAndIce::toggleSound( %this )
 {
-	echo( "toggle sound" );
-	$Game::soundOn = !$Game::soundOn;
-	%this.turnSoundOn( $Game::soundOn );
+	%this.turnSoundOn( !$Game::soundOn );
 }
