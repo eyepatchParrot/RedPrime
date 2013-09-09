@@ -55,10 +55,10 @@ function PlayerCharacter::shoot(%this)
 			}
 			else
 			{
-				%this.schedule(80, shootOneBullet, 10.0);
-				%this.schedule(160, shootOneBullet, -10.0);
+				%this.schedule(32, shootOneBullet, 10.0);
+				%this.schedule(64, shootOneBullet, -10.0);
 				%reloadTime = %this.shotFreq;
-				alxPlay("FireAndIce:SuperShotSound");
+				alxPlay("FireAndIce:shotgunSound");
 			}
 			
 			%this.schedule(%reloadTime, reload);
@@ -151,7 +151,7 @@ function PlayerCharacter::die( %this )
 	%deathAnimation = new Sprite();
 	%deathAnimation.setLifetime(2.0);
 	%deathAnimation.setPosition( %this.getPosition() );
-	%deathAnimation.setSize( %this.getSize() );
+	%deathAnimation.setSize( 1 SPC 1.2 );
 	%deathAnimation.setImage( "FireAndIce:redDead" );
 	%deathAnimation.setBodyType( static );
 	%deathAnimation.setCollisionSuppress( true );

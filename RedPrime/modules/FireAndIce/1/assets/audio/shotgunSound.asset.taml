@@ -1,0 +1,4 @@
+<AudioAsset
+	AssetName="shotgunSound"
+	AssetAutoUnload="0"
+	AudioFile="shotgunShot.wav" />
