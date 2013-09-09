@@ -34,6 +34,7 @@
 		Profile="GuiButtonProfile"
 		Position="930 610"
 		Extent="23 23"
+		Command="FireAndIce.startInfoMenu();"
 		NormalImage="FireAndIce:questionMarkImage" />
 		
 	<GuiImageButtonCtrl

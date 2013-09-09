@@ -1,0 +1,35 @@
+<GuiControl
+	Name="WinMenu"
+	Profile="GuiDefaultProfile" >
+	
+	<GuiButtonCtrl
+		Name="WinMenuBackground"
+		Profile="LoseBackgroundProfile"
+		Position="0 0"
+		Extent="960 640"
+		Command="FireAndIce.startMainMenu();"
+		Visible="1" />
+		
+	<GuiTextCtrl
+		Name="WinWaveTextLabel"
+		Profile="LoseBigTextProfile"
+		Position="100 50"
+		Extent="760 100"
+		text = "Game over. You lasted X waves." />
+		
+	<GuiMLTextCtrl
+		Name="WinTextLabel"
+		Profile="LoseTextProfile"
+		Position="100 150"
+		Extent="760 340"
+		text="You win. kkkkkkkkkkk \nkkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkkkkkkkkkkk~nTap anywhere to exit."
+		truncate="1"
+		Visible="1" />
+		
+	<GuiTextCtrl
+		Name="WinTapTextLabel"
+		Profile="LoseTextProfile"
+		text="Tap anywhere to return to menu."
+		Position="100 540"
+		Extent="760 30" />
+</GuiControl>

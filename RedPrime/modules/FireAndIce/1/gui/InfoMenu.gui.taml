@@ -1,0 +1,26 @@
+<GuiControl
+	Name="InfoMenu"
+	Profile="GuiDefaultProfile" >
+	
+	<GuiButtonCtrl
+		Name="InfoMenuBackground"
+		Profile="LoseBackgroundProfile"
+		Position="0 0"
+		Extent="960 640"
+		Command="FireAndIce.startMainMenu();"
+		Visible="1" />
+		
+	<GuiMLTextCtrl
+		Name="InfoTextLabel"
+		Profile="LoseBigTextProfile"
+		Position="100 50"
+		Extent="760 440"
+		text = "Use WASD to move, and click to shoot. Hold down your mouse button to shoot continuously." />
+		
+	<GuiTextCtrl
+		Name="InfoTapTextLabel"
+		Profile="LoseTextProfile"
+		text="Tap anywhere to return to menu."
+		Position="100 540"
+		Extent="760 30" />
+</GuiControl>

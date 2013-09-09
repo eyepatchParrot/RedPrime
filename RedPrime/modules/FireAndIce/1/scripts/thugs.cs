@@ -77,6 +77,5 @@ function Thug::die( %this )
 		case 2:
 		alxPlay("FireAndIce:monsterDie3Sound");
 	}
-	//%this.safeDelete();
-	//%this.setCollisionSuppress( true );
+	$Game::Kills++;
 }

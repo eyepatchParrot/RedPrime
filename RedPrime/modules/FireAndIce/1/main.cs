@@ -50,6 +50,8 @@ function FireAndIce::create( %this )
 	
 	%this.add( TamlRead("./gui/LoseMenu.gui.taml") );
 	%this.add( TamlRead("./gui/MainMenu.gui.taml") );
+	%this.add( TamlRead("./gui/WinMenu.gui.taml") );
+	%this.add( TamlRead("./gui/InfoMenu.gui.taml") );
 	
 	// We need a main "Scene" we can use as our game world.  The place where sceneObjects play.
     // Give it a global name "mainScene" since we may want to access it directly in our scripts.
@@ -99,6 +101,7 @@ function FireAndIce::loadPreferences( %this )
 
 function FireAndIce::startMainMenu( %this )
 {
+	%this.clearDialogs();
 	Canvas.pushDialog( MainMenu );
 	alxStopAll();
 	alxPlay("FireAndIce:GameMusic");
@@ -109,8 +112,7 @@ function FireAndIce::startMainMenu( %this )
 
 function FireAndIce::startGame( %this )
 {
-	Canvas.popDialog( LoseMenu );
-	Canvas.popDialog( MainMenu );
+	%this.clearDialogs();
 	Canvas.pushDialog(ArenaHud);
 
     // Finally, connect our scene into the viewport (or sceneWindow).
@@ -137,16 +139,46 @@ function FireAndIce::startGame( %this )
 	
 	alxStopAll();
 	alxPlay("FireAndIce:GameMusic");
+	
+	$Game::Kills = 0;
 }
 
 //-----------------------------------------------------------------------------
 
 function FireAndIce::startLoseMenu( %this )
 {
-	mainScene.setScenePause( true );
-	cancel(SpawnManager.waveSpawn);
+	%this.clearDialogs();
 	Canvas.pushDialog(LoseMenu);
 	LoseWaveTextLabel.setText("Game over. You lasted " SPC SpawnManager.waveNum SPC " waves.");
+	mainScene.clear();
+}
+
+//-----------------------------------------------------------------------------
+
+function FireAndIce::startWinMenu( %this )
+{
+	%this.clearDialogs();
+	Canvas.pushDialog(WinMenu);
+	WinWaveTextLabel.setText("Game over. You lasted " SPC SpawnManager.waveNum SPC " waves.");
+	mainScene.clear();
+}
+
+//-----------------------------------------------------------------------------
+
+function FireAndIce::startInfoMenu( %this )
+{
+	%this.clearDialogs();
+	Canvas.pushDialog(InfoMenu);
+}
+
+//-----------------------------------------------------------------------------
+
+function FireAndIce::clearDialogs( %this )
+{
+	Canvas.popDialog(LoseMenu);
+	Canvas.popDialog(WinMenu);
+	Canvas.popDialog(MainMenu);
+	Canvas.popDialog(ArenaHud);
 }
 
 //-----------------------------------------------------------------------------
@@ -158,18 +190,19 @@ function FireAndIce::turnSoundOn( %this, %on )
 	
 	if ( %on )
 	{
-		//alxSetChannelVolume(0, 1.0);
+		alxSetChannelVolume(0, 1.0);
 		alxSetChannelVolume(1, 1.0);
 		SoundButton.setNormalImage( %onImg );
-		SoundButton.setHoverImage( %offImg );
+		SoundButton.setHoverImage( %onImg );
+		SoundButton.setDownImage( %onImg );
 	}
 	else
 	{
-		//alxSetChannelVolume(0, 0.0);
-		alxSetChannelVolume(0, 1.0);
+		alxSetChannelVolume(0, 0.0);
 		alxSetChannelVolume(1, 0.0);
 		SoundButton.setNormalImage( %offImg );
-		SoundButton.setHoverImage( %onImg );
+		SoundButton.setHoverImage( %offImg );
+		SoundButton.setDownImage( %offImg );
 	}
 	
 	$Game::soundOn = %on;

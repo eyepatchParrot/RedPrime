@@ -158,6 +158,13 @@ function PlayerCharacter::die( %this )
 	%deathAnimation.setSceneLayer( 3 );
 	mainScene.add( %deathAnimation );
 	%this.schedule(32, "safeDelete" );
-	FireAndIce.schedule(2000, "startLoseMenu");
+	if (SpawnManager.waveNum < $Game::MinWinWave)
+	{
+		FireAndIce.schedule(2000, "startLoseMenu");
+	}
+	else
+	{
+		FireAndIce.schedule(2000, "startWinMenu");
+	}
 	alxPlay("FireAndIce:redDieSound");
 }
