@@ -11,11 +11,11 @@
 		Visible="1" />
 		
 	<GuiTextCtrl
-		Name="LoseWaveTextLabel"
+		Name="LoseGameOverTextLabel"
 		Profile="LoseBigTextProfile"
 		Position="100 50"
 		Extent="760 100"
-		text = "Game over. You lasted X waves." />
+		text = "Game over." />
 		
 	<GuiMLTextCtrl
 		Name="LoseTextLabel"
@@ -23,8 +23,14 @@
 		Position="100 150"
 		Extent="760 340"
 		text="You lose. kkkkkkkkkkk \nkkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkkkkkkkkkkk~nTap anywhere to exit."
-		truncate="1"
 		Visible="1" />
+		
+	<GuiMLTextCtrl
+		Name="LoseStatsTextLabel"
+		Profile="LoseTextProfile"
+		Position="100 490"
+		Extent="760 50"
+		text="You survived X waves, and slaughtered N of the ice horde." />
 		
 	<GuiTextCtrl
 		Name="TapTextLabel"

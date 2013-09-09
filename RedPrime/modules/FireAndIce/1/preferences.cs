@@ -11,5 +11,5 @@ $Game::ArenaHeight = 18;
 $Game::ScreenWidth = 16;
 $Game::ScreenHeight = 9;
 $Game::soundOn = true;
-$Game::MinWinWave = 2;
+$Game::MinWinWave = 5;
 $Game::Kills = 0;

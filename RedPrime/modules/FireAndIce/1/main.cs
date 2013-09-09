@@ -149,7 +149,7 @@ function FireAndIce::startLoseMenu( %this )
 {
 	%this.clearDialogs();
 	Canvas.pushDialog(LoseMenu);
-	LoseWaveTextLabel.setText("Game over. You lasted " SPC SpawnManager.waveNum SPC " waves.");
+	LoseStatsTextLabel.setText("You survived" SPC SpawnManager.waveNum SPC "waves, and slaughtered" SPC $Game::Kills SPC "of the ice horde.");
 	mainScene.clear();
 }
 
@@ -159,7 +159,7 @@ function FireAndIce::startWinMenu( %this )
 {
 	%this.clearDialogs();
 	Canvas.pushDialog(WinMenu);
-	WinWaveTextLabel.setText("Game over. You lasted " SPC SpawnManager.waveNum SPC " waves.");
+	WinStatsTextLabel.setText("You survived" SPC SpawnManager.waveNum SPC "waves, and slaughtered" SPC $Game::Kills SPC "of the ice horde.");
 	mainScene.clear();
 }
 
