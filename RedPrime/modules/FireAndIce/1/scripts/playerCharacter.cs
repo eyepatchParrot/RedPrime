@@ -53,10 +53,10 @@ function PlayerCharacter::shoot(%this)
 			}
 			else
 			{
-				createBulletAt(%this.Position, %angle + 10.0);
-				createBulletAt(%this.Position, %angle - 10.0);
+				schedule(80, 0, createBulletAt, %this.Position, %angle + 10.0);
+				schedule(160, 0, createBulletAt, %this.Position, %angle - 10.0);
 				%reloadTime = %this.shotFreq;
-				alxPlay("ToyAssets:VolleyTowerFireSound");
+				alxPlay("FireAndIce:SuperShotSound");
 			}
 			
 			%this.schedule(%reloadTime, reload);

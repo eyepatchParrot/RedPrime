@@ -37,7 +37,6 @@ function FireAndIce::create( %this )
 	exec("./scripts/spawnZone.cs");
 	exec("./scripts/hud.cs");
 	exec("./scripts/shooterControlsBehavior.cs");
-	exec("./scripts/updateImageBehavior.cs");
 	exec("./scripts/moveTowardBehavior.cs");
 	exec("./scripts/faceMouseBehavior.cs");
 	exec("./scripts/moveAnimationBehavior.cs");
