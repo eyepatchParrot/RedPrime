@@ -1,4 +1,4 @@
 <AudioAsset
 	AssetName="ShotSound"
 	AssetAutoUnload="0"
-	AudioFile="shot2.wav" />
+	AudioFile="shot_fat.wav" />

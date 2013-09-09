@@ -1,5 +1,5 @@
  <AudioAsset
 	AssetName="GameMusic"
 	AssetAutoUnload="0"
-	AudioFile="FireTeam_Arcade_Theme2.wav"
+	AudioFile="FireTeam_Arcade_Theme.wav"
 	Looping="true" />

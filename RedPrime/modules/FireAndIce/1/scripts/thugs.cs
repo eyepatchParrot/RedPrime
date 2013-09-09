@@ -23,13 +23,6 @@ function createThug(%position)
 	%moveAi.moveSpeed = 2.0;
 	%s.addBehavior(%moveAi);
 	
-	/*%imageUpdate = UpdateImageBehavior.createInstance();
-	%imageUpdate.notMovingImage = "ToyAssets:TD_Barbarian_CompSprite";
-	%imageUpdate.moveNorthAnimation = "ToyAssets:TD_Barbarian_North";
-	%imageUpdate.moveSouthAnimation = "ToyAssets:TD_Barbarian_WalkSouth";
-	%imageUpdate.moveWestAnimation  = "ToyAssets:TD_Barbarian_WalkWest";
-	%s.addBehavior(%imageUpdate);*/
-	
 	%dropPickup = DropPickupBehavior.createInstance();
 	%dropPickup.pickupClass = "weaponBoost";
 	%s.addBehavior(%dropPickup);
