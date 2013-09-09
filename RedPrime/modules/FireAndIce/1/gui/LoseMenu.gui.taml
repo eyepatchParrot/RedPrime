@@ -7,7 +7,7 @@
 		Profile="LoseBackgroundProfile"
 		Position="0 0"
 		Extent="960 640"
-		Command="FireAndIce.startGame();"
+		Command="FireAndIce.startMainMenu();"
 		Visible="1" />
 		
 	<GuiTextCtrl

@@ -101,6 +101,7 @@ function FireAndIce::startMainMenu( %this )
 	Canvas.pushDialog( MainMenu );
 	alxStopAll();
 	alxPlay("FireAndIce:GameMusic");
+	%this.turnSoundOn( $Game::soundOn );
 }
 
 //-----------------------------------------------------------------------------
@@ -145,4 +146,34 @@ function FireAndIce::startLoseMenu( %this )
 	cancel(SpawnManager.waveSpawn);
 	Canvas.pushDialog(LoseMenu);
 	LoseWaveTextLabel.setText("Game over. You lasted " SPC SpawnManager.waveNum SPC " waves.");
+}
+
+//-----------------------------------------------------------------------------
+
+function FireAndIce::turnSoundOn( %this, %on )
+{
+	%onImg = "FireAndIce:speakerOnImage";
+	%offImg = "FireAndIce:speakerOffImage";
+	
+	if ( %on )
+	{
+		alxSetChannelVolume(0, 1.0);
+		SoundButton.setNormalImage( %onImg );
+		SoundButton.setHoverImage( %offImg );
+	}
+	else
+	{
+		alxSetChannelVolume(0, 0.0);
+		SoundButton.setNormalImage( %offImg );
+		SoundButton.setHoverImage( %onImg );
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+function FireAndIce::toggleSound( %this )
+{
+	echo( "toggle sound" );
+	$Game::soundOn = !$Game::soundOn;
+	%this.turnSoundOn( $Game::soundOn );
 }

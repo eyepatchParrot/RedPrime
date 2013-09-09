@@ -41,5 +41,6 @@
 		Profile="GuiButtonProfile"
 		Position="880 607"
 		Extent="38 29"
+		Command="FireAndIce.toggleSound();"
 		NormalImage="FireAndIce:speakerOnImage" />
 </GuiControl>

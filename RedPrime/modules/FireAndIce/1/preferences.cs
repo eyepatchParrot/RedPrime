@@ -10,3 +10,4 @@ $Game::ArenaWidth = 32;
 $Game::ArenaHeight = 18;
 $Game::ScreenWidth = 16;
 $Game::ScreenHeight = 9;
+$Game::soundOn = true;
