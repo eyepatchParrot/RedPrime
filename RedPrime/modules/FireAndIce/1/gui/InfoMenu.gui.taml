@@ -12,15 +12,20 @@
 		
 	<GuiMLTextCtrl
 		Name="InfoTextLabel"
-		Profile="LoseBigTextProfile"
+		Profile="LoseTextProfile"
 		Position="100 50"
-		Extent="760 440"
-		text = "Use WASD to move, and click to shoot. Hold down your mouse button to shoot continuously." />
+		Extent="760 520"
+		text = "Use WASD to move, and click to shoot. Hold down your mouse button to shoot continuously.<br>
+		'Red...you must help stop the Ice invasion. I know that you lost your wife and daughter but there
+		is no time for grieving.They will find their way to the crystal shores of Sailum and will be waiting
+		for you. Valnias has nearly pushed us out of Albus city. we cannot let him have our lands! The Astra
+		Guardian is going to end this war...we just have to hold out until he arrives.'<br>
+		'I will do what is needed, Church...oh and one other thing...'" />
 		
 	<GuiTextCtrl
 		Name="InfoTapTextLabel"
 		Profile="LoseTextProfile"
 		text="Tap anywhere to return to menu."
-		Position="100 540"
+		Position="100 590"
 		Extent="760 30" />
 </GuiControl>
