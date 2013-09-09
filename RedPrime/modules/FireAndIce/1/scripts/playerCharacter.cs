@@ -3,7 +3,7 @@ function createPlayerCharacter()
 	%pc = new Sprite(PlayerCharacter);
 	%pc.setBodyType( dynamic );
 	%pc.Position = "0 0";
-	%pc.Size = "1 1";
+	%pc.Size = "0.9 0.9";
 	%pc.SceneLayer = 1;
 	%pc.SceneGroup = $Game::PlayerDomain;
 	// %pc.Image = "FireAndIce:Soldier";

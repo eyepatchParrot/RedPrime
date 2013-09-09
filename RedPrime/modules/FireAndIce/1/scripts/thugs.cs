@@ -6,11 +6,11 @@ function createThug(%position)
 	};
 	%s.setBodyType( dynamic );
 	%s.setPosition( %position );
-	%s.Size = "1.5 1.5";
+	%s.Size = "0.9 0.9";
 	%s.SceneLayer = 2;
 	%s.SceneGroup = $Game::ThugDomain;
 	%s.playAnimation( "FireAndIce:monsterAnim" );
-	%s.createCircleCollisionShape(0.5);
+	%s.createCircleCollisionShape(0.3);
 	%s.setCollisionGroups( $Game::PlayerDomain, $Game::BulletDomain, $Game::ThugDomain );
 	%s.setFixedAngle( true );
 	
@@ -68,6 +68,7 @@ function Thug::die( %this )
 	%deathAnimation.setBodyType( static );
 	%deathAnimation.setCollisionSuppress( true );
 	%deathAnimation.setSceneLayer(4);
+	%deathAnimation.setAngle(%this.getAngle());
 	mainScene.add( %deathAnimation );
 	%this.onDeath();
 	%this.schedule(32, "safeDelete");

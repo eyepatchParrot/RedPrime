@@ -1,6 +1,6 @@
 <AnimationAsset
     AssetName="monsterDeathAnim"
     Image="@asset=FireAndIce:monster"
-    AnimationFrames="3"
+    AnimationFrames="4"
     AnimationTime="0.1"
 	AnimationCycle="0" />

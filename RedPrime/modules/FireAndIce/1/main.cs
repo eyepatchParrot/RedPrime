@@ -55,7 +55,7 @@ function FireAndIce::create( %this )
 	// We need a main "Scene" we can use as our game world.  The place where sceneObjects play.
     // Give it a global name "mainScene" since we may want to access it directly in our scripts.
     new Scene(mainScene);
-	mainScene.setDebugOn("collision aabb"); // aabb
+	// mainScene.setDebugOn("collision aabb"); // aabb
 
     // Without a system window or "Canvas", we can't see or interact with our scene.
     // AppCore initialized the Canvas already
