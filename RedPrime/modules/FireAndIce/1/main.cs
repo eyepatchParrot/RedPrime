@@ -122,7 +122,6 @@ function FireAndIce::startGame( %this )
 	%viewLow = -%viewTop;
 	mainWindow.setViewLimitOn( %viewLeft SPC %viewLow SPC %viewRight SPC %viewTop );
 
-	Canvas.popDialog(loseMenu);
 	mainScene.clear();
 	mainScene.setScenePause( false );
 	createArena();
@@ -145,4 +144,5 @@ function FireAndIce::startLoseMenu( %this )
 	mainScene.setScenePause( true );
 	cancel(SpawnManager.waveSpawn);
 	Canvas.pushDialog(LoseMenu);
+	LoseWaveTextLabel.setText("Game over. You lasted " SPC SpawnManager.waveNum SPC " waves.");
 }

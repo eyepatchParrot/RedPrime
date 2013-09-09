@@ -10,12 +10,36 @@
 		Image="FireAndIce:mainMenuBg"
 		Visible="1" />
 		
-	<GuiButtonCtrl
+	<GuiImageButtonCtrl
 		Name="PlayButton"
-		Profile="BlueButtonProfile"
-		Position="430 600"
-		Extent="100 30"
+		Profile="GuiButtonProfile"
+		Position="316 520"
+		Extent="327 23"
 		text="Play"
 		Command="FireAndIce.startGame();"
+		NormalImage="FireAndIce:startImage"
 		Visible="1" />
+		
+	<GuiImageButtonCtrl
+		Name="QuitButton"
+		Profile="GuiButtonProfile"
+		Position="426 580"
+		Extent="108 23"
+		Command="quit();"
+		NormalImage="FireAndIce:quitImage"
+		Visible="1" />
+		
+	<GuiImageButtonCtrl
+		Name="InfoButton"
+		Profile="GuiButtonProfile"
+		Position="930 610"
+		Extent="23 23"
+		NormalImage="FireAndIce:questionMarkImage" />
+		
+	<GuiImageButtonCtrl
+		Name="SoundButton"
+		Profile="GuiButtonProfile"
+		Position="880 607"
+		Extent="38 29"
+		NormalImage="FireAndIce:speakerOnImage" />
 </GuiControl>

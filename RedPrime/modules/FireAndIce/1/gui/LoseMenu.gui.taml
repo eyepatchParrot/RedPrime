@@ -2,28 +2,34 @@
 	Name="LoseMenu"
 	Profile="GuiDefaultProfile" >
 	
-	<GuiControl
+	<GuiButtonCtrl
 		Name="LoseMenuBackground"
 		Profile="LoseBackgroundProfile"
-		Position="330 170"
-		Extent="300 300"
+		Position="0 0"
+		Extent="960 640"
+		Command="FireAndIce.startGame();"
 		Visible="1" />
 		
 	<GuiTextCtrl
+		Name="LoseWaveTextLabel"
+		Profile="LoseBigTextProfile"
+		Position="100 50"
+		Extent="760 100"
+		text = "Game over. You lasted X waves." />
+		
+	<GuiMLTextCtrl
 		Name="LoseTextLabel"
-		Profile="GuiDefaultProfile"
-		Position="450 180"
-		Extent="300 20"
-		text="You lose."
+		Profile="LoseTextProfile"
+		Position="100 150"
+		Extent="760 340"
+		text="You lose. kkkkkkkkkkk \nkkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkkkkkkkkkkk~nTap anywhere to exit."
 		truncate="1"
 		Visible="1" />
 		
-	<GuiButtonCtrl
-		Name="LoseRestartButton"
-		Profile="BlueButtonProfile"
-		Position="430 430"
-		Extent="100 30"
-		text="Restart"
-		Command="FireAndIce.startGame();"
-		Visible="1" />
+	<GuiTextCtrl
+		Name="TapTextLabel"
+		Profile="LoseTextProfile"
+		text="Tap anywhere to return to menu."
+		Position="100 540"
+		Extent="760 30" />
 </GuiControl>

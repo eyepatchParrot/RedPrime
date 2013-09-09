@@ -208,15 +208,29 @@ if ( !isObject(HudTextProfile) ) new GuiControlProfile (HudTextProfile : GuiDefa
 
 if ( !isObject(LoseBackgroundProfile) ) new GuiControlProfile (LoseBackgroundProfile : GuiBackgroundProfile)
 {
-	fillColor = DarkGray;
+	fillColor = White;
+	fillColorHL = White;
+    fillColorNA = White;
 };
 
 //-----------------------------------------------------------------------------
 
 if ( !isObject(LoseTextProfile) ) new GuiControlProfile (LoseTextProfile : GuiDefaultProfile)
 {
+	fontType = "datacron";
+	fontSize = 32;
 	justify = "center";
+	modal = false;
 };
+
+//-----------------------------------------------------------------------------
+
+if ( !isObject(LoseBigTextProfile) ) new GuiControlProfile (LoseBigTextProfile : LoseTextProfile)
+{
+	fontSize = 50;
+};
+
+//-----------------------------------------------------------------------------
 
 if ( !isObject(MainBackgroundProfile) ) new GuiControlProfile (MainBackgroundProfile : GuiBackgroundProfile)
 {
