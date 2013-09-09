@@ -178,6 +178,7 @@ function FireAndIce::clearDialogs( %this )
 	Canvas.popDialog(LoseMenu);
 	Canvas.popDialog(WinMenu);
 	Canvas.popDialog(MainMenu);
+	Canvas.popDialog(InfoMenu);
 	Canvas.popDialog(ArenaHud);
 }
 

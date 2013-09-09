@@ -13,23 +13,29 @@
 	<GuiTextCtrl
 		Name="WinGameOverTextLabel"
 		Profile="LoseBigTextProfile"
-		Position="100 50"
-		Extent="760 100"
+		Position="100 20"
+		Extent="760 50"
 		text = "Game over." />
 		
 	<GuiMLTextCtrl
 		Name="WinTextLabel"
 		Profile="LoseTextProfile"
-		Position="100 150"
-		Extent="760 320"
-		text="You win. kkkkkkkkkkk \nkkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkkkkkkkkkkk~nTap anywhere to exit."
-		truncate="1"
-		Visible="1" />
+		Position="100 90"
+		Extent="760 450"
+		text="'Good work Red!'
+		'I thought I was dead.'
+		'Dead? Not at all, you fell in battle to be sure, but you defended the plains long enough for the Astra Guardian to exact his vengeance upon the dark rebellion. I was able to save you from the clutches of your wounds...we have won!'
+		'...'
+		'You don't seem happy...'
+		'I wanted to die out there Church...to see my little girl again...to feel the love of my wife. How can I do that now that there is no battle left to claim me?'
+		'You don't get it do you Red? There will always be more battles... That's why I saved you!'
+		'Then I will not rest until I find battle once more! I will hunt down every fight until I can finally go home.'
+		'I know you will Red... I know you will.'" />
 		
 	<GuiMLTextCtrl
 		Name="WinStatsTextLabel"
 		Profile="LoseTextProfile"
-		Position="100 470"
+		Position="100 540"
 		Extent="760 50"
 		text="You survived X waves, and slaughtered N of the ice horde." />
 		
@@ -37,6 +43,6 @@
 		Name="WinTapTextLabel"
 		Profile="LoseTextProfile"
 		text="Tap anywhere to return to menu."
-		Position="100 540"
+		Position="100 590"
 		Extent="760 30" />
 </GuiControl>

@@ -13,22 +13,22 @@
 	<GuiTextCtrl
 		Name="LoseGameOverTextLabel"
 		Profile="LoseBigTextProfile"
-		Position="100 50"
-		Extent="760 100"
+		Position="100 20"
+		Extent="760 50"
 		text = "Game over." />
 		
 	<GuiMLTextCtrl
 		Name="LoseTextLabel"
 		Profile="LoseTextProfile"
-		Position="100 150"
-		Extent="760 340"
-		text="You lose. kkkkkkkkkkk \nkkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkk kkkkkkkkkkkkkkkkkkkkkkkkkkk~nTap anywhere to exit."
+		Position="100 90"
+		Extent="760 450"
+		text="'Red?...Red?!!! Red is down! He has joined his loved ones on Sailum's shore...his sacrifice will not be forgotten... We must continue to fight on!'"
 		Visible="1" />
 		
 	<GuiMLTextCtrl
 		Name="LoseStatsTextLabel"
 		Profile="LoseTextProfile"
-		Position="100 490"
+		Position="100 540"
 		Extent="760 50"
 		text="You survived X waves, and slaughtered N of the ice horde." />
 		
@@ -36,6 +36,6 @@
 		Name="TapTextLabel"
 		Profile="LoseTextProfile"
 		text="Tap anywhere to return to menu."
-		Position="100 540"
+		Position="100 590"
 		Extent="760 30" />
 </GuiControl>

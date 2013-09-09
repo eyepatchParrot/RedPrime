@@ -16,11 +16,13 @@
 		Position="100 50"
 		Extent="760 520"
 		text = "Use WASD to move, and click to shoot. Hold down your mouse button to shoot continuously.<br>
-		'Red...you must help stop the Ice invasion. I know that you lost your wife and daughter but there
-		is no time for grieving.They will find their way to the crystal shores of Sailum and will be waiting
-		for you. Valnias has nearly pushed us out of Albus city. we cannot let him have our lands! The Astra
-		Guardian is going to end this war...we just have to hold out until he arrives.'<br>
-		'I will do what is needed, Church...oh and one other thing...'" />
+		'Red...you must help stop the Ice invasion. I know that you lost your wife and daughter but there is no time for grieving. They will find their way to the crystal shores of Sailum and will be waiting for you. Valnias has nearly pushed us out of Albus city. we cannot let him have our lands! The Astra Guardian is going to end this war...we just have to hold out until he arrives.'
+		'I will do what is needed, Church...oh and one other thing...'
+		'Don't ever mention my family again...'
+		'...Head to the plains to the north. Try and kill as many of the bastards as you can.'
+		'Consider it done.'
+		'May your swords be broken and your guns empty before you reach the shores of Sailum, Macto Reddington...'
+		'I will see you again Church...'" />
 		
 	<GuiTextCtrl
 		Name="InfoTapTextLabel"
