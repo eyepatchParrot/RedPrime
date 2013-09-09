@@ -2,4 +2,5 @@
 	AssetName="GameMusic"
 	AssetAutoUnload="0"
 	AudioFile="FireTeam_Arcade_Theme.wav"
+	VolumeChannel="1"
 	Looping="true" />
