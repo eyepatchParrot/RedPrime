@@ -1,0 +1,4 @@
+<AudioAsset
+	AssetName="PickupSound"
+	AssetAutoUnload="0"
+	AudioFile="pickup.wav" />

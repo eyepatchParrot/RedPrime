@@ -131,7 +131,7 @@ function PlayerCharacter::pickup( %this, %pickup)
 		%this.setWeaponBoosted( true );
 		cancel(%this.disableBoostSchedule);
 		%this.disableBoostSchedule = %this.schedule(5000, setWeaponBoosted, false );
-		alxPlay("ToyAssets:TowerUpgradeSound");
+		alxPlay("FireAndIce:pickupSound");
 	}
 	%pickup.safeDelete();
 }
