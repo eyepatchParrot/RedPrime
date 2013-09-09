@@ -159,5 +159,5 @@ function PlayerCharacter::die( %this )
 	mainScene.add( %deathAnimation );
 	%this.schedule(32, "safeDelete" );
 	FireAndIce.schedule(2000, "startLoseMenu");
-	alxPlay("ToyAssets:KnightDeathSound");
+	alxPlay("FireAndIce:redDieSound");
 }

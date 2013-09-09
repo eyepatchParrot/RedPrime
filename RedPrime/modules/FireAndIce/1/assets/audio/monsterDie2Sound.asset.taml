@@ -1,0 +1,4 @@
+<AudioAsset
+	AssetName="monsterDie2Sound"
+	AssetAutoUnload="0"
+	AudioFile="monsterDie2.wav" />

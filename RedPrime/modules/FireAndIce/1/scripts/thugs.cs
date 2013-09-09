@@ -65,7 +65,18 @@ function Thug::die( %this )
 	mainScene.add( %deathAnimation );
 	%this.onDeath();
 	%this.schedule(32, "safeDelete");
-	alxPlay("ToyAssets:BarbarianDeathSound");
+	%selectedSound = getRandom(2);
+	switch ( %selectedSound )
+	{
+		case 0:
+		alxPlay("FireAndIce:monsterDie1Sound");
+		
+		case 1:
+		alxPlay("FireAndIce:monsterDie2Sound");
+		
+		case 2:
+		alxPlay("FireAndIce:monsterDie3Sound");
+	}
 	//%this.safeDelete();
 	//%this.setCollisionSuppress( true );
 }

@@ -166,7 +166,7 @@ function FireAndIce::turnSoundOn( %this, %on )
 	else
 	{
 		//alxSetChannelVolume(0, 0.0);
-		alxSetChannelVolume(0, 0.7);
+		alxSetChannelVolume(0, 1.0);
 		alxSetChannelVolume(1, 0.0);
 		SoundButton.setNormalImage( %offImg );
 		SoundButton.setHoverImage( %onImg );
