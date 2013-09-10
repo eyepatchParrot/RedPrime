@@ -2,11 +2,12 @@
 	Name="WinMenu"
 	Profile="GuiDefaultProfile" >
 	
-	<GuiButtonCtrl
+	<GuiImageButtonCtrl
 		Name="WinMenuBackground"
-		Profile="LoseBackgroundProfile"
+		Profile="GuiDefaultProfile"
 		Position="0 0"
 		Extent="960 640"
+		NormalImage="FireAndIce:redMenuImage"
 		Command="FireAndIce.startMainMenu();"
 		Visible="1" />
 		

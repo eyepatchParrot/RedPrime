@@ -2,12 +2,13 @@
 	Name="InfoMenu"
 	Profile="GuiDefaultProfile" >
 	
-	<GuiButtonCtrl
+	<GuiImageButtonCtrl
 		Name="InfoMenuBackground"
-		Profile="LoseBackgroundProfile"
+		Profile="GuiDefaultProfile"
 		Position="0 0"
 		Extent="960 640"
-		Command="FireAndIce.startMainMenu();"
+		NormalImage="FireAndIce:redMenuImage"
+		Command="FireAndIce.startCreditsMenu();"
 		Visible="1" />
 		
 	<GuiMLTextCtrl
@@ -24,7 +25,7 @@
 	<GuiTextCtrl
 		Name="InfoTapTextLabel"
 		Profile="LoseTextProfile"
-		text="Tap anywhere to return to menu."
+		text="Tap anywhere to continue."
 		Position="100 590"
 		Extent="760 30" />
 </GuiControl>

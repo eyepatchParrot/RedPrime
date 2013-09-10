@@ -43,13 +43,14 @@ function FireAndIce::create( %this )
 	exec("./scripts/dropPickupBehavior.cs");
 	
 	FireAndIce.add( TamlRead("./gui/ConsoleDialog.gui.taml") );
-	// GlobalActionMap.bind( keyboard, "ctrl tilde", toggleConsole );
+	GlobalActionMap.bind( keyboard, "ctrl tilde", toggleConsole );
 	
 	%this.add( TamlRead("./gui/ArenaHud.gui.taml") );
 	%this.add( TamlRead("./gui/LoseMenu.gui.taml") );
 	%this.add( TamlRead("./gui/MainMenu.gui.taml") );
 	%this.add( TamlRead("./gui/WinMenu.gui.taml") );
 	%this.add( TamlRead("./gui/InfoMenu.gui.taml") );
+	%this.add( TamlRead("./gui/CreditsMenu.gui.taml") );
 	
 	// We need a main "Scene" we can use as our game world.  The place where sceneObjects play.
     // Give it a global name "mainScene" since we may want to access it directly in our scripts.
@@ -167,6 +168,14 @@ function FireAndIce::startInfoMenu( %this )
 {
 	%this.clearDialogs();
 	Canvas.pushDialog(InfoMenu);
+}
+
+//-----------------------------------------------------------------------------
+
+function FireAndIce::startCreditsMenu( %this )
+{
+	%this.clearDialogs();
+	Canvas.pushDialog(CreditsMenu);
 }
 
 //-----------------------------------------------------------------------------

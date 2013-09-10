@@ -223,6 +223,7 @@ if ( !isObject(LoseTextProfile) ) new GuiControlProfile (LoseTextProfile : GuiDe
 	fontSize = 32;
 	justify = "center";
 	modal = false;
+	fontColor = White;
 };
 
 //-----------------------------------------------------------------------------
