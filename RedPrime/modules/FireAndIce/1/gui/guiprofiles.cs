@@ -184,7 +184,7 @@ if ( !isObject(HudDialogProfile) ) new GuiControlProfile (HudDialogProfile : Gui
 
 if ( !isObject(HudBackgroundProfile) ) new GuiControlProfile (HudBackgroundProfile : GuiBackgroundProfile)
 {
-	fillColor = DarkBlue;
+	fillColor = Black;
 };
 
 //-----------------------------------------------------------------------------
@@ -202,6 +202,8 @@ if ( !isObject(HudLifeProfile) ) new GuiControlProfile (HudLifeProfile)
 if ( !isObject(HudTextProfile) ) new GuiControlProfile (HudTextProfile : GuiDefaultProfile)
 {
 	fontColor = White;
+	fontType = "datacron";
+	fontSize = 32;
 };
 
 //-----------------------------------------------------------------------------

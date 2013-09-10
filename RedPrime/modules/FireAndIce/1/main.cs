@@ -46,8 +46,6 @@ function FireAndIce::create( %this )
 	GlobalActionMap.bind( keyboard, "ctrl tilde", toggleConsole );
 	
 	%this.add( TamlRead("./gui/ArenaHud.gui.taml") );
-	LifeIndicator.setValue(0.5);
-	
 	%this.add( TamlRead("./gui/LoseMenu.gui.taml") );
 	%this.add( TamlRead("./gui/MainMenu.gui.taml") );
 	%this.add( TamlRead("./gui/WinMenu.gui.taml") );

@@ -1,27 +1,29 @@
 <GuiControl
 	Name="ArenaHud"
 	Profile="HudDialogProfile"
+	Position = "0 0"
 	HorizSizing="left"
     VertSizing="bottom"
 	Visible="1" >
 	
-	<GuiControl
-		Profile="HudBackgroundProfile"
-		Position = "860 0"
-		Extent="100 100"
-		Visible="1" />
-	
-	<GuiProgressCtrl
-		Name="LifeIndicator"
-		Profile="HudLifeProfile"
-		Position="870 10"
-		Extent="80 30"
+	<GuiSpriteCtrl
+		Profile="GuiDefaultProfile"
+		Position = "660 0"
+		Extent="300 40"
+		Image="FireAndIce:hudBgImage"
 		Visible="1" />
 		
 	<GuiTextCtrl
 		Name="HudWaveText"
 		Profile="HudTextProfile"
-		Position="870 30"
-		Text="Wave : 0"
-		Visible="1" />
+		Position="665 0"
+		Extent = "120 40"
+		Text="Wave : 0" />
+		
+	<GuiTextCtrl
+		Name="HudKillsText"
+		Profile="HudTextProfile"
+		Position="785 0"
+		Extent = "175 40"
+		Text="Kills : 0" />
 </GuiControl>
