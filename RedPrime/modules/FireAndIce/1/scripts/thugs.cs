@@ -78,5 +78,5 @@ function Thug::die( %this )
 		alxPlay("FireAndIce:monsterDie3Sound");
 	}
 	$Game::Kills++;
-	HudKillsText.setText("Kills :" SPC $Game::Kills);
+	updateKillNum();
 }

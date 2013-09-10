@@ -43,7 +43,7 @@ function FireAndIce::create( %this )
 	exec("./scripts/dropPickupBehavior.cs");
 	
 	FireAndIce.add( TamlRead("./gui/ConsoleDialog.gui.taml") );
-	GlobalActionMap.bind( keyboard, "ctrl tilde", toggleConsole );
+	// GlobalActionMap.bind( keyboard, "ctrl tilde", toggleConsole );
 	
 	%this.add( TamlRead("./gui/ArenaHud.gui.taml") );
 	%this.add( TamlRead("./gui/LoseMenu.gui.taml") );

@@ -7,8 +7,7 @@
     Extent="1024 768"
     MinExtent="8 8"
     Visible="1"
-	HelpTag="0"
-	Image="@asset=Sandbox:blueGradient">
+	HelpTag="0" >
 	
 	<!-- Console Command Entry -->
     <GuiConsoleEditCtrl
