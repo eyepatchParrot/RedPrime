@@ -1,0 +1,6 @@
+<AnimationAsset
+	AssetName="redIdleRifleAnim"
+	Image="@asset=FireAndIce:redWalk"
+	AnimationFrames="10"
+	AnimationTime="0.1"
+	AnimationCycle="0" />

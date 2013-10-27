@@ -1,0 +1,6 @@
+<AnimationAsset
+	AssetName="redIdleShootShotgunAnim"
+	Image="@asset=FireAndIce:redWalk"
+	AnimationFrames="25"
+	AnimationTime="0.1"
+	AnimationCycle="0" />

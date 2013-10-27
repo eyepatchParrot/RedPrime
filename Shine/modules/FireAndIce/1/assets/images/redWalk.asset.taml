@@ -1,7 +1,7 @@
 <ImageAsset
 	AssetName="redWalk"
-	ImageFile="RedWalk_condensed.png"
+	ImageFile="Shine_Sprites.png"
 	CellCountX="5"
-	CellCountY="2"
-	CellWidth="42"
-	CellHeight="61" />
+	CellCountY="6"
+	CellWidth="43"
+	CellHeight="63" />
