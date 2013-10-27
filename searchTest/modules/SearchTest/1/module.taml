@@ -1,0 +1,13 @@
+<ModuleDefinition
+	ModuleId="searchTest"
+	VersionId="1"
+	Description="A small test area to test out pathfinding."
+	Dependencies="AppCore=1"
+	ScriptFile="main.cs"
+	CreateFunction="create"
+	DestroyFunction="destroy">
+		<DeclaredAssets
+			Path="assets"
+			Extension="asset.taml"
+			Recurse="true"/>
+</ModuleDefinition>
