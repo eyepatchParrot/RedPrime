@@ -56,6 +56,7 @@ function SearchTest::create( %this )
 	exec("./scripts/controls.cs");
 	
 	exec("./scripts/navmap.cs");
+	exec("./scripts/utility.cs");
 
     // load some scripts and variables
     // exec("./scripts/someScript.cs");
@@ -149,7 +150,7 @@ function SearchTest::setStartNode(%this, %pos)
 	%this.startNode.setPosition(%pos);
 	
 	if (isObject(%this.endNode)) {
-		// calculate path
+		%this.calculatePath();
 	}
 }
 
@@ -177,7 +178,7 @@ function SearchTest::setEndNode(%this, %pos)
 	%this.endNode.setPosition( %pos );
 	
 	if (isObject(%this.startNode)) {
-		// calculate path
+		%this.calculatePath();
 	}
 }
 
@@ -226,4 +227,96 @@ function SearchTest::selectRect(%this, %pos)
 		$selectedQuad = %newSelection;
 	}
 	%this.map.draw();
+}
+
+//-----------------------------------------------------------------------------
+
+function SearchTest::calculatePath(%this)
+{
+	if (!isObject(%this.startNode) || !isObject(%this.endNode)) {
+		return;
+	}
+	
+	if (!isObject(%this.drawObjs)) {
+		%this.drawObjs = new SimSet();
+	} else {
+		%this.drawObjs.deleteObjects();
+	}
+	
+	%startNode = newNode(%this.startNode.getPosition());
+	%endNode = newNode(%this.endNode.getPosition());
+	%closedNodes = new SimSet();
+	%openNodes = new SimSet();
+	
+	// F = G + H
+	%openNodes.add(%startNode);
+	%startNode.G = 0;
+	%startNode.F = %startNode.G + getH(%startNode, %endNode);
+	
+	while (%openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode)) {
+		%n = findCheapestNode(%openNodes);
+		%closedNodes.add(%n);
+		%openNodes.remove(%n);
+		
+		%neighbors = %this.getNeighbors(%n, %endNode);
+		for (%i = 0; %i < %neighbors.getCount(); %i++) {
+			%neighbor = %neighbors.getObject(%i);
+			%g = getMoveCost(%n, %neighbor);
+			if (%openNodes.isMember(%neighbor) && %g < %neighbor.G) {
+				%openNodes.remove(%neighbor);
+			}
+			if (%closedNodes.isMember(%neighbor) && %g < %neighbor.G) {
+				%closedNodes.remove(%neighbor);
+			}
+			if (!%closedNodes.isMember(%neighbor) && !%closedNodes.isMember(%neighbor)) {
+				%neighbor.G = %g;
+				%neighbor.F = %neighbor.G + getH(%neighbor, %endNode);
+				%neighbor.parent = %n;
+				%openNodes.add(%neighbor);
+			}
+		}
+	}
+	
+	%nodePath = new SimSet();
+	%n = endNode;
+	%nodePath.add(%n);
+	while (isObject(%n.parent)) {
+		%nodePath.add(%n.parent);
+		%n = %n.parent;
+	}
+	
+	reverseSimSet(%nodePath);
+	
+	%this.drawNodePath(%nodePath);
+}
+
+function SearchTest::getNeighbors(%this, %from, %endNode)
+{
+	%neighbors = %this.map.getNeighbors(%from);
+	if (%this.map.isVisibleFrom(%from, %endNode)) %neighbors.add(%endNode);
+	
+	return %neighbors;
+}	
+
+function SearchTest::drawNodePath(%this, %nodePath)
+{
+	for (%nodeIdx = 0; %nodeIdx + 1 < %nodePath.getCount(); %nodeIdx++) {
+		%a = %nodePath.getObject(%nodeIdx);
+		%b = %nodePath.getObject(%nodeIdx + 1);
+		if (%nodeIdx != 0) {
+			%obj = newCircle(%a.pos);
+			%obj.setFillMode(true);
+			%obj.setSize(2);
+			%this.drawObjs.add(%obj);
+		}
+		%dist = distTo(%a.pos, %b.pos);
+		%angle = mDegToRad(Vector2AngleToPoint(%a.pos, %b.pos) - 90.0);
+		echo("dist :" SPC %dist SPC "angle :" SPC %angle);
+		for (%i = 1; %i * %i < %dist; %i++) {
+			%objPos = projectPos(%a.pos, %angle, %i);
+			%obj = newCircle(%objPos);
+			mainScene.add(%obj);
+			%this.drawObjs.add(%obj);
+		}
+	}
 }

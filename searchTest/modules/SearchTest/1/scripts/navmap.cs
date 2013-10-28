@@ -26,6 +26,48 @@ function NavMap::getQuadAt(%this, %pos)
 	}
 }
 
+function NavMap::getNeighbors(%this, %node)
+{
+	%neighbors = new SimSet();
+	%adjQuad = %this.getAdjQuad(%node);
+	%visibleQuads = %this.getVisibleQuads(%adjQuad, %node);
+	for (%i = 0; %i < %visibleQuads.getCount(); %i++) {
+		%q = %visibleQuads.getObject(%i);
+		if (%this.isVisibleFrom(%from, %q.nw) && !neighbors.isMember(%q.nw)) %neighbors.add(%q.nw);
+		if (%this.isVisibleFrom(%from, %q.ne) && !neighbors.isMember(%q.ne)) %neighbors.add(%q.ne);
+		if (%this.isVisibleFrom(%from, %q.sw) && !neighbors.isMember(%q.sw)) %neighbors.add(%q.sw);
+		if (%this.isVisibleFrom(%from, %q.se) && !neighbors.isMember(%q.se)) %neighbors.add(%q.se);
+	}
+	return %neighbors;
+}
+
+function NavMap::getVisibleQuads(%this, %quad, %node, %quads)
+{
+	%quads.add(%quad);
+	if (isObject(%quad.n) && !%quads.isMember(%quad.n) && %this.quadIsVisibleFrom(%node, %quad.n)) %this.getVisibleQuads(%quad.n, %node, %quads);
+	if (isObject(%quad.e) && !%quads.isMember(%quad.e) && %this.quadIsVisibleFrom(%node, %quad.e)) %this.getVisibleQuads(%quad.e, %node, %quads);
+	if (isObject(%quad.s) && !%quads.isMember(%quad.s) && %this.quadIsVisibleFrom(%node, %quad.s)) %this.getVisibleQuads(%quad.s, %node, %quads);
+	if (isObject(%quad.w) && !%quads.isMember(%quad.w) && %this.quadIsVisibleFrom(%node, %quad.w)) %this.getVisiblequads(%quad.w, %node, %quads);
+	return %quads;
+}
+
+function NavMap::quadIsVisibleFrom(%this, %node, %quad)
+{
+	return %this.isVisibleFrom(%node, %quad.nw) || %this.isVisibleFrom(%node, %quad.ne) || %this.isVisibleFrom(%node, %quad.sw) || %this.isVisibleFrom(%node, %quad.se);
+}
+
+function NavMap::getAdjQuad(%this, %node)
+{
+	%quads = %this.getQuads();
+	for (%i = 0; %i < %quads.getCount(); %i++) {
+		%q = %quads.getObject(%i);
+		if (%q.containsNode(%node)) return %q;
+	}
+	return %this.getQuadAt(%node.pos);
+}
+
+// NavMap::isVisibleFrom
+
 function NavMap::extendTo(%this, %pos, %prevQuad)
 {
 	if (isObject(%prevQuad)) {
@@ -211,6 +253,11 @@ function newNavQuad(%nNW, %nNE, %nSW, %nSE)
 	return %quad;
 }
 
+function NavQuad::containsNode(%this, %node)
+{
+	return %node == %this.nw || %node == %this.ne || %node == %this.sw || %node == %this.se;
+}
+
 function NavQuad::getQuads(%this, %quads)
 {
 	if (!isObject(%quads)) {
@@ -324,44 +371,6 @@ function NavQuad::getH(%this)
 	%ySW = getWord(%this.sw.pos, 1);
 	%ySE = getWord(%this.se.pos, 1);
 	return mGetMax(%yNW, %yNE) - mGetMin(%ySW, %ySE);
-}
-
-function isBetween(%v, %a, %b)
-{
-	%min = mGetMin(%a, %b);
-	%max = mGetMax(%a, %b);
-	return %v > %min && %v < %max;
-}
-
-function projectX(%y, %p1, %p2)
-{
-	// y = mx + b
-	// x = (y - b) / m
-	%m = getSlope(%p1, %p2);
-	%b = getConst(%p1, %m);
-	return (%y - %b) / %m;
-}
-
-function projectY(%x, %p1, %p2)
-{
-	// y = mx + b
-	%m = getSlope(%p1, %p2);
-	%b = getConst(%p1, %m);
-	return %m * %x + %b;
-}
-
-function getSlope(%p1, %p2)
-{
-	%rise = getWord(%p1, 1) - getWord(%p2, 1);
-	%run = getWord(%p1, 0) - getWord(%p2, 0);
-	return %rise / %run;
-}
-
-function getConst(%p, %m)
-{
-	%y = getWord(%p, 1);
-	%x = getWord(%p, 0);
-	return %y - %m * %x;
 }
 
 function newNode(%pos)
