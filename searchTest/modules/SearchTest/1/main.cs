@@ -248,39 +248,48 @@ function SearchTest::calculatePath(%this)
 	%closedNodes = new SimSet();
 	%openNodes = new SimSet();
 	
+	echo("angle: " SPC Vector2AngleToPoint(%startNode.pos, %endNode.pos));
+	
 	// F = G + H
 	%openNodes.add(%startNode);
 	%startNode.G = 0;
 	%startNode.F = %startNode.G + getH(%startNode, %endNode);
 	
 	while (%openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode)) {
+		echo("numOpenNodes :" SPC %openNodes.getCount());
 		%n = findCheapestNode(%openNodes);
+		echo("n" SPC %n.pos);
 		%closedNodes.add(%n);
 		%openNodes.remove(%n);
 		
 		%neighbors = %this.getNeighbors(%n, %endNode);
+		echo("numNeighbors :" SPC %neighbors.getCount());
 		for (%i = 0; %i < %neighbors.getCount(); %i++) {
 			%neighbor = %neighbors.getObject(%i);
-			%g = getMoveCost(%n, %neighbor);
+			%g = %n.G + getMoveCost(%n, %neighbor);
 			if (%openNodes.isMember(%neighbor) && %g < %neighbor.G) {
 				%openNodes.remove(%neighbor);
 			}
 			if (%closedNodes.isMember(%neighbor) && %g < %neighbor.G) {
 				%closedNodes.remove(%neighbor);
 			}
-			if (!%closedNodes.isMember(%neighbor) && !%closedNodes.isMember(%neighbor)) {
+			if (!%openNodes.isMember(%neighbor) && !%closedNodes.isMember(%neighbor)) {
 				%neighbor.G = %g;
 				%neighbor.F = %neighbor.G + getH(%neighbor, %endNode);
+				echo("neighbor" SPC %neighbor.pos SPC "g" SPC %g SPC "f" SPC %neighbor.F);
 				%neighbor.parent = %n;
 				%openNodes.add(%neighbor);
 			}
 		}
 	}
 	
+	echo("num open nodes :" SPC %openNodes.getCount() SPC "end node is member :" SPC %closedNodes.isMember(%endNode));
+	
 	%nodePath = new SimSet();
-	%n = endNode;
+	%n = %endNode;
 	%nodePath.add(%n);
 	while (isObject(%n.parent)) {
+		echo("add node" SPC %n.pos);
 		%nodePath.add(%n.parent);
 		%n = %n.parent;
 	}

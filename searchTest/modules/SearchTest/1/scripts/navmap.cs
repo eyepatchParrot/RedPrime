@@ -29,44 +29,78 @@ function NavMap::getQuadAt(%this, %pos)
 function NavMap::getNeighbors(%this, %node)
 {
 	%neighbors = new SimSet();
-	%adjQuad = %this.getAdjQuad(%node);
-	%visibleQuads = %this.getVisibleQuads(%adjQuad, %node);
-	for (%i = 0; %i < %visibleQuads.getCount(); %i++) {
-		%q = %visibleQuads.getObject(%i);
-		if (%this.isVisibleFrom(%from, %q.nw) && !neighbors.isMember(%q.nw)) %neighbors.add(%q.nw);
-		if (%this.isVisibleFrom(%from, %q.ne) && !neighbors.isMember(%q.ne)) %neighbors.add(%q.ne);
-		if (%this.isVisibleFrom(%from, %q.sw) && !neighbors.isMember(%q.sw)) %neighbors.add(%q.sw);
-		if (%this.isVisibleFrom(%from, %q.se) && !neighbors.isMember(%q.se)) %neighbors.add(%q.se);
+	%adjQuads = %this.getAdjQuads(%node);
+	
+	for (%i = 0; %i < %adjQuads.getCount(); %i++) {
+		%q = %adjQuads.getObject(%i);
+		if (%q.nw != %node) %neighbors.add(%q.nw);
+		if (%q.ne != %node) %neighbors.add(%q.ne);
+		if (%q.sw != %node) %neighbors.add(%q.sw);
+		if (%q.se != %node) %neighbors.add(%q.se);
 	}
+	
+	// %visibleQuads = %this.getVisibleQuads(%node);
+	// for (%i = 0; %i < visibleQuads.getCount(); %i++) {
+		// %q = %visibleQuads.getObject(%i);
+	
+	// %adjQuad = %this.getAdjQuad(%node);
+	// %visibleQuads = %this.getVisibleQuads(%adjQuad, %node);
+	// for (%i = 0; %i < %visibleQuads.getCount(); %i++) {
+		// %q = %visibleQuads.getObject(%i);
+		// if (%this.isVisibleFrom(%from, %q.nw) && !neighbors.isMember(%q.nw)) %neighbors.add(%q.nw);
+		// if (%this.isVisibleFrom(%from, %q.ne) && !neighbors.isMember(%q.ne)) %neighbors.add(%q.ne);
+		// if (%this.isVisibleFrom(%from, %q.sw) && !neighbors.isMember(%q.sw)) %neighbors.add(%q.sw);
+		// if (%this.isVisibleFrom(%from, %q.se) && !neighbors.isMember(%q.se)) %neighbors.add(%q.se);
+	// }
 	return %neighbors;
 }
 
-function NavMap::getVisibleQuads(%this, %quad, %node, %quads)
-{
-	%quads.add(%quad);
-	if (isObject(%quad.n) && !%quads.isMember(%quad.n) && %this.quadIsVisibleFrom(%node, %quad.n)) %this.getVisibleQuads(%quad.n, %node, %quads);
-	if (isObject(%quad.e) && !%quads.isMember(%quad.e) && %this.quadIsVisibleFrom(%node, %quad.e)) %this.getVisibleQuads(%quad.e, %node, %quads);
-	if (isObject(%quad.s) && !%quads.isMember(%quad.s) && %this.quadIsVisibleFrom(%node, %quad.s)) %this.getVisibleQuads(%quad.s, %node, %quads);
-	if (isObject(%quad.w) && !%quads.isMember(%quad.w) && %this.quadIsVisibleFrom(%node, %quad.w)) %this.getVisiblequads(%quad.w, %node, %quads);
-	return %quads;
-}
-
-function NavMap::quadIsVisibleFrom(%this, %node, %quad)
-{
-	return %this.isVisibleFrom(%node, %quad.nw) || %this.isVisibleFrom(%node, %quad.ne) || %this.isVisibleFrom(%node, %quad.sw) || %this.isVisibleFrom(%node, %quad.se);
-}
-
-function NavMap::getAdjQuad(%this, %node)
-{
+function NavMap::getAdjQuads(%this, %node) {
 	%quads = %this.getQuads();
+	%adjQuads = new SimSet();
 	for (%i = 0; %i < %quads.getCount(); %i++) {
 		%q = %quads.getObject(%i);
-		if (%q.containsNode(%node)) return %q;
+		if (%q.containsNode(%node)) %adjQuads.add(%q);
 	}
-	return %this.getQuadAt(%node.pos);
+	return %adjQuads;
 }
+	
+
+// function NavMap::getVisibleQuads(%this, %quad, %node, %quads)
+// {
+	// %quads.add(%quad);
+	// if (isObject(%quad.n) && !%quads.isMember(%quad.n) && %this.quadIsVisibleFrom(%node, %quad.n)) %this.getVisibleQuads(%quad.n, %node, %quads);
+	// if (isObject(%quad.e) && !%quads.isMember(%quad.e) && %this.quadIsVisibleFrom(%node, %quad.e)) %this.getVisibleQuads(%quad.e, %node, %quads);
+	// if (isObject(%quad.s) && !%quads.isMember(%quad.s) && %this.quadIsVisibleFrom(%node, %quad.s)) %this.getVisibleQuads(%quad.s, %node, %quads);
+	// if (isObject(%quad.w) && !%quads.isMember(%quad.w) && %this.quadIsVisibleFrom(%node, %quad.w)) %this.getVisiblequads(%quad.w, %node, %quads);
+	// return %quads;
+// }
+
+// function NavMap::quadIsVisibleFrom(%this, %node, %quad)
+// {
+	// return %this.isVisibleFrom(%node, %quad.nw) || %this.isVisibleFrom(%node, %quad.ne) || %this.isVisibleFrom(%node, %quad.sw) || %this.isVisibleFrom(%node, %quad.se);
+// }
+
+// function NavMap::getAdjQuad(%this, %node)
+// {
+	// %quads = %this.getQuads();
+	// for (%i = 0; %i < %quads.getCount(); %i++) {
+		// %q = %quads.getObject(%i);
+		// if (%q.containsNode(%node)) return %q;
+	// }
+	// return %this.getQuadAt(%node.pos);
+// }
 
 // NavMap::isVisibleFrom
+function NavMap::isVisibleFrom(%this, %a, %b) {
+	%adjQuads = %this.getAdjQuads(%a);
+	for (%i = 0; %i < %adjQuads.getCount(); %i++) {
+		%q = %adjQuads.getObject(%i);
+		if (%q.containsNode(%b)) return true;
+	}
+	return false;
+}
+	
 
 function NavMap::extendTo(%this, %pos, %prevQuad)
 {
@@ -255,7 +289,7 @@ function newNavQuad(%nNW, %nNE, %nSW, %nSE)
 
 function NavQuad::containsNode(%this, %node)
 {
-	return %node == %this.nw || %node == %this.ne || %node == %this.sw || %node == %this.se;
+	return %node == %this.nw || %node == %this.ne || %node == %this.sw || %node == %this.se || %this.contains(%node.pos);
 }
 
 function NavQuad::getQuads(%this, %quads)

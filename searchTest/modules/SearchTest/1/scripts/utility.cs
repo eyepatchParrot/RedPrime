@@ -48,7 +48,7 @@ function projectPos(%startPos, %angle, %distance)
 function reverseSimSet(%set)
 {
 	for (%i = 0; %i < %set.getCount(); %i++) {
-		lastObject(%set).bringToFront();
+		%set.bringToFront(lastObject(%set));
 	}
 }
 
