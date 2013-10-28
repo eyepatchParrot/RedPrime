@@ -1,15 +1,3 @@
-function concatSimsets(%a, %b)
-{
-	%c = new SimSet();
-	for (%i = 0; %i < %a.getCount(); %i++) {
-		%c.add(%a.getObject(%i));
-	}
-	for (%i = 0; %i < %b.getCount(); %i++) {
-		%c.add(%b.getObject(%i));
-	}
-	return %c;
-}
-
 function newMap()
 {
 	%map = new ScriptObject();
@@ -19,146 +7,223 @@ function newMap()
 
 function NavMap::initAt(%this, %pNW, %pNE, %pSW, %pSE)
 {
-	if (!isObject(%this.nodes)) {
-		%this.nodes = new SimSet();
-	}
-	
-	%this.nodes.clear();
 	%nodeNW = newNode(%pNW);
 	%nodeNE = newNode(%pNE);
 	%nodeSW = newNode(%pSW);
 	%nodeSE = newNode(%pSE);
 	
-	%nodeNW.connectTo(%nodeNE);
-	%nodeNW.connectTo(%nodeSW);
-	%nodeSE.connectTo(%nodeNE);
-	%nodeSE.connectTo(%nodeSW);
-	
-	echo("add nodes");
-	%this.nodes.add(%nodeNW);
-	%this.nodes.add(%nodeNE);
-	%this.nodes.add(%nodeSW);
-	%this.nodes.add(%nodeSE);
+	%this.rootQuad = newNavQuad(%nodeNW, %nodeNE, %nodeSW, %nodeSE);
 }
 
 function NavMap::extendTo(%this, %pos)
 {
-	// find intersecting edge
-	%edge = %this.getNearestEdge(%pos);
-	echo("nearest edge is" SPC %edge.a.pos SPC %edge.b.pos);
-	switch (%edge.facing) {
-	case $NORTH_SOUTH:
-		echo("edge is n/s");
-		%p1 = getWord(%pos, 0) SPC getWord(%edge.a.pos, 1);
-		%p2 = getWord(%pos, 0) SPC getWord(%edge.b.pos, 1);
-	case $EAST_WEST:
-		echo("edge is e/w");
-		%p1 = getWord(%edge.a.pos, 0) SPC getWord(%pos, 1);
-		%p2 = getWord(%edge.b.pos, 0) SPC getWord(%pos, 1);
+	%prevQuad = %this.nearestQuad(%pos);
+	if (%prevQuad.posIsEast(%pos)) {
+		%x = getWord(%pos, 0);
+		%yN = getWord(%prevQuad.ne, 1);
+		%yS = getWord(%prevQuad.se, 1);
+		%nNW = %prevQuad.ne;
+		%nNE = newNode(%x SPC %yN);
+		%nSW = %prevQuad.se;
+		%nSE = newNode(%x SPC %yS);
+		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE); 
+		%prevQuad.e = %q;
+	} else if (%prevQuad.posIsWest(%pos)) {
+		%x = getWord(%pos, 0);
+		%yN = getWord(%prevQuad.nw, 1);
+		%yS = getWord(%prevQuad.sw, 1);
+		%nNW = newNode(%x SPC %yN);
+		%nNE = %prevQuad.nw;
+		%nSW = newNode(%x SPC %yS);
+		%nSE = %prevQuad.sw;
+		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+		%prevQuad.w = %q;
+	} else if (%prevQuad.posIsNorth(%pos)) {
+		%xW = getWord(%prevQuad.nw, 0);
+		%xE = getWord(%prevQuad.ne, 0);
+		%y = getWord(%pos, 1);
+		%nNW = newNode(%xW SPC %y);
+		%nNE = newNode(%xE SPC %y);
+		%nSW = %prevQuad.nw;
+		%nSE = %prevQuad.ne;
+		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+		%prevQuad.n = %q;
+	} else if (%prevQuad.posIsSouth(%pos)) {
+		%xW = getWord(%prevQuad.sw, 0);
+		%xE = getWord(%prevQuad.se, 0);
+		%y = getWord(%pos, 1);
+		%nNW = %prevQuad.sw;
+		%nNE = %prevQuad.se;
+		%nSW = newNode(%xW SPC %y);
+		%nSE = newNode(%xE SPC %y);
+		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+		%prevQuad.s = %q;
 	}
-	%n1 = newNode(%p1);
-	%n2 = newNode(%p2);
-	%edge.a.connectTo(%n1);
-	%edge.b.connectTo(%n2);
-	%n1.connectTo(%n2);
-	%this.nodes.add(%n1);
-	%this.nodes.add(%n2);
 }
 
-function NavMap::isEmpty(%this)
+function NavMap::isEmpty(this)
 {
-	if (!isObject(%this.nodes) || %this.nodes.getCount() == 0) {
-		return true;
-	}
-	return false;
+	return isObject(%this.rootQuad);
 }
 
-function NavMap::getNearestEdge(%this, %pos)
+function NavMap::nearestQuad(%this, %pos)
 {
-	%edges = %this.nodes.getObject(0).getEdges();
-	echo("thwop");
-	%closeEdge = %edges.getObject(0);
-	%edgePoint = %closeEdge.getAverage();
-	%xDist = getWord(%edgePoint, 0) - getWord(%pos, 0);
-	%yDist = getWord(%edgePoint, 1) - getWord(%pos, 1);
-	%minDist = %xDist * %xDist + %yDist * %yDist;
-	for (%i = 0; %i < %edges.getCount(); %i++) {
-		%curEdge = %edges.getObject(%i);
-		%edgePoint = %curEdge.getAverage();
-		%xDist = getWord(%edgePoint, 0) - getWord(%pos, 0);
-		%yDist = getWord(%edgePoint, 1) - getWord(%pos, 1);
-		%curDist = %xDist * %xDist + %yDist * %yDist;
-		if (%curDist < %minDist) {
-			%closeEdge = %curEdge;
-			%minDist = %curDist;
+	%quads = %this.getQuads();
+	if (%quads.getCount() > 0) {
+		%minQuad = %quads.getObject(0);
+		%minDist = %minQuad.distTo(%pos);
+		for (%i = 1; %i < %quads.getCount(); %i++) {
+			%q = %quads.getObject(%i);
+			%qDist = %q.distTo(%pos);
+			if (%qDist < %minDist) {
+				%minQuad = %q;
+				%minDist = %qDist;
+			}
 		}
 	}
-	return %closeEdge;
+	return %minQuad;
 }
 
-function NavMap::draw(%this)
+function NavMap::numNodes(%this)
 {
-	if (!isObject(%this.drawNodes)) {
-		%this.drawNodes = new SimSet();
-	} else {
-		while (%this.drawNodes.getCount()) {
-			%this.drawNodes.getObject(0).delete();
-		}
-		%this.drawNodes.delete();
-	}
-	%this.drawNodes = new SimSet();
-	for (%i = 0; %i < %this.nodes.getCount(); %i++) {
-		%curNode = %this.nodes.getObject(%i);
-		%size = 0.5;
-		%obj = new ShapeVector();
-		%obj.setSize(%size);
-		%obj.setLineColor("1 1 1 1");
-		%obj.setFillColor("0 0 0 1");
-		%obj.setFillMode(true);
-		%obj.setIsCircle(true);
-		%obj.setCircleRadius(%size);
-		%obj.setPosition(%curNode.pos);
-		mainScene.add(%obj);
-		%this.drawNodes.add(%obj);
-	}
+	return %this.getNodes().getCount();
 }
 
-function newEdge(%node1, %node2)
+function NavMap::getNodes(%this)
 {
-	%edge = new ScriptObject();
-	%edge.class = "NavEdge";
-	%xDist = mAbs(getWord(%node1.pos, 0) - getWord(%node2.pos, 0));
-	%yDist = mAbs(getWord(%node1.pos, 1) - getWord(%node2.pos, 1));
-	echo(%xDist SPC %yDist);
-	if (%xDist > %yDist) {
-		echo("face e/w");
-		%edge.facing = $EAST_WEST;
-		if (getWord(%node1.pos, 0) < getWord(%node2.pos, 0)) {
-			%edge.a = %node1;
-			%edge.b = %node2;
-		} else {
-			%edge.a = %node2;
-			%edge.b = %node1;
-		}
-	} else {
-		echo("face n/s");
-		%edge.facing = $NORTH_SOUTH;
-		if (getWord(%node1.pos, 1) > getWord(%node2.pos, 1)) {
-			%edge.a = %node1;
-			%edge.b = %node2;
-		} else {
-			%edge.a = %node2;
-			%edge.b = %node1;
-		}
+	%quads = %this.getQuads();
+	%nodes = new SimSet();
+	for (%i = 0; %i < %quads.getCount(); %i++) {
+		%q = %quads.getObject(%i);
+		if (isNewNode(%q.nw, %nodes)) %nodes.add(%q.nw);
+		if (isNewNode(%q.ne, %nodes)) %nodes.add(%q.ne);
+		if (isNewNode(%q.sw, %nodes)) %nodes.add(%q.sw);
+		if (isNewNode(%q.se, %nodes)) %nodes.add(%q.se);
 	}
-	return %edge;
+	return %nodes;
 }
 
-function NavEdge::getAverage(%this)
+function isNewNode(%n, %set)
 {
-	%x = (getWord(%this.a.pos, 0) + getWord(%this.b.pos, 0)) / 2.0;
-	%y = (getWord(%this.a.pos, 1) + getWord(%this.b.pos, 1)) / 2.0;
-	return %x SPC %y;
+	return isObject(%n) && !%set.isMember(%n);
+}
+
+function NavMap::numQuads(%this)
+{
+	%quads = %this.getQuads();
+	return %quads.getCount();
+}
+
+function NavMap::getQuads(%this)
+{
+	return %this.rootQuad.getQuads();
+}
+
+function newNavQuad(%nNW, %nNE, %nSW, %nSE)
+{
+	%quad = new ScriptObject();
+	%quad.class = "NavQuad";
+	%quad.nw = %nNW;
+	%quad.ne = %nNE;
+	%quad.sw = %nSW;
+	%quad.se = %nSE;
+	return %quad;
+}
+
+function NavQuad::getQuads(%this, %quads)
+{
+	if (!isObject(%quads)) {
+		%quads = new SimSet();
+	}
+	
+	if (!%quads.isMember(%this)) {
+		%quads.add(%this);
+		if (isObject(%this.n)) %this.n.getQuads(%quads);
+		if (isObject(%this.e)) %this.e.getQuads(%quads);
+		if (isObject(%this.s)) %this.s.getQuads(%quads);
+		if (isObject(%this.w)) %this.w.getQuads(%quads);
+	}
+	return %quads;
+}
+
+function NavQuad::distTo(%this, %pos)
+{
+	%x = (getWord(%this.nw, 0) + getWord(%this.ne, 0) + getWord(%this.sw, 0) + getWord(%this.se, 0)) / 4.0;
+	%y = (getWord(%this.nw, 1) + getWord(%this.ne, 1) + getWord(%this.sw, 1) + getWord(%this.se, 1)) / 4.0;
+	%xDist = getWord(%pos, 0) - %x;
+	%yDist = getWord(%pos, 1) - %y;
+	return %xDist * %xDist + %yDist * %yDist;
+}
+
+function NavQuad::posIsWest(%this, %pos)
+{
+	%x = getWord(%pos, 0);
+	%y = getWord(%pos, 1);
+	%yN = getWord(%this.nw.pos, 1);
+	%yS = getWord(%this.sw.pos, 1);
+	%pX = projectX(%y, %this.nw.pos, %this.sw.pos);
+	return isBetween(%y, %yN, %yS) && %x < %pX;
+}
+
+function NavQuad::posIsEast(%this, %pos)
+{
+	%x = getWord(%pos, 0);
+	%y = getWord(%pos, 1);
+	%yN = getWord(%this.ne.pos, 1);
+	%yS = getWord(%this.se.pos, 1);
+	%pX = projectX(%y, %this.ne.pos, %this.se.pos);
+	return isBetween(%y, %yN, %yS) && %x > %pX;
+}
+
+function NavQuad::posIsNorth(%this, %pos)
+{
+	%x = getWord(%pos, 0);
+	%y = getWord(%pos, 1);
+	%xW = getWord(%this.nw.pos, 0);
+	%xE = getWord(%this.ne.pos, 0);
+	%pY = projectY(%x, %this.nw.pos, %this.ne.pos);
+	return isBetween(%x, %xW, %xE) && %y > %pY;
+}
+
+function NavQuad::posIsSouth(%this, %pos)
+{
+	%x = getWord(%pos, 0);
+	%y = getWord(%pos, 1);
+	%xW = getWord(%this.sw.pos, 0);
+	%xE = getWord(%this.se.pos, 0);
+	%pY = projectY(%x, %this.sw.pos, %this.se.pos);
+	return isBetween(%x, %xW, %xE) && %y < %pY;
+}
+
+function projectX(%y, %p1, %p2)
+{
+	// y = mx + b
+	// x = (y - b) / m
+	%m = getSlope(%p1, %p2);
+	%b = getConst(%p1, %m);
+	return (%y - %b) / %m;
+}
+
+function projectY(%x, %p1, %p2)
+{
+	// y = mx + b
+	%m = getSlope(%p1, %p2);
+	%b = getConst(%p1, %m);
+	return %m * %x + %b;
+}
+
+function getSlope(%p1, %p2)
+{
+	%rise = getWord(%p1, 1) - getWord(%p2, 1);
+	%run = getWord(%p1, 0) - getWord(%p2, 0);
+	return %rise / %run;
+}
+
+function getConst(%p, %m)
+{
+	%y = getWord(%p, 1);
+	%x = getWord(%p, 0);
+	return %y - %m * %x;
 }
 
 function newNode(%pos)
@@ -167,61 +232,4 @@ function newNode(%pos)
 	%node.class = "NavNode";
 	%node.pos = %pos;
 	return %node;
-}
-
-function NavNode::getEdges(%this, %visitedNodes)
-{
-	%edges = new SimSet();
-	if (!isObject(%visitedNodes)) {
-		%visitedNodes = new SimSet();
-	}
-	%visitedNodes.add(%this);
-	echo("************* visiting" SPC %this.pos SPC "*************");
-	echo("numVisitedNodes" SPC %visitedNodes.getCount());
-	// create edges
-	for (%i = 0; %i < %this.nodes.getCount(); %i++) {
-		%curNode = %this.nodes.getObject(%i);
-//		echo("try edge from" SPC %this.pos SPC "to" SPC %curNode.pos);
-		if (!%curNode.isInSimSet(%visitedNodes)) {
-//			echo("success");
-			echo("edge from" SPC %this.pos SPC "to" SPC %curNode.pos);
-			%curEdge = newEdge(%this, %curNode);
-			%edges.add(%curEdge);
-		}
-	}
-	
-	// recurse
-	for (%i = 0; %i < %this.nodes.getCount(); %i++) {
-		%curNode = %this.nodes.getObject(%i);
-		if (!%curNode.isInSimSet(%visitedNodes)) {
-			%edges = concatSimSets(%edges, %curNode.getEdges(%visitedNodes));
-		}
-	}
-	
-	echo("done");
-	return %edges;
-}	
-
-function NavNode::connectTo(%this, %other)
-{
-	if (!isObject(%this.nodes)) {
-		%this.nodes = new SimSet();
-	}
-	
-	if (!isObject(%other.nodes)) {
-		%other.nodes = new SimSet();
-	}
-	
-	%this.nodes.add(%other);
-	%other.nodes.add(%this);
-}
-
-function NavNode::isInSimSet(%this, %set)
-{
-	for (%i = 0; %i < %set.getCount(); %i++) {
-		if (%set.getObject(%i) == %this) {
-			return true;
-		}
-	}
-	return false;
 }

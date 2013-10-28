@@ -183,14 +183,15 @@ function SearchTest::addRect(%this, %pos)
 		%pSE = %xE SPC %yS;
 		echo("pNW" SPC %pNW SPC "pNE" SPC %pNE SPC "pSW" SPC %pSW SPC "pSE" SPC %pSE);
 		%this.map.initAt(%pNW, %pNE, %pSW, %pSE);
-		echo("Num nodes :" SPC %this.map.nodes.getCount());
-		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
+		echo("Num quads :" SPC %this.map.numQuads());
+		echo("Num nodes :" SPC %this.map.numNodes());
+//		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
 	} else {
 		echo("* extending *");
 		%this.map.extendTo(%pos);
 		echo("Num nodes :" SPC %this.map.nodes.getCount());
-		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
+//		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
 	}
 
-	%this.map.draw();
+//	%this.map.draw();
 }
