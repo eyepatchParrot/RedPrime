@@ -28,49 +28,55 @@ function NavMap::getQuadAt(%this, %pos)
 
 function NavMap::extendTo(%this, %pos, %prevQuad)
 {
-	echo("Attempt extension");
-	if (%prevQuad.posIsEast(%pos)) {
-		%x = getWord(%pos, 0);
-		%yN = getWord(%prevQuad.ne.pos, 1);
-		%yS = getWord(%prevQuad.se.pos, 1);
-		%nNW = %prevQuad.ne;
-		%nNE = newNode(%x SPC %yN);
-		%nSW = %prevQuad.se;
-		%nSE = newNode(%x SPC %yS);
-		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE); 
-		%prevQuad.e = %q;
-	} else if (%prevQuad.posIsWest(%pos)) {
-		%x = getWord(%pos, 0);
-		%yN = getWord(%prevQuad.nw.pos, 1);
-		%yS = getWord(%prevQuad.sw.pos, 1);
-		%nNW = newNode(%x SPC %yN);
-		%nNE = %prevQuad.nw;
-		%nSW = newNode(%x SPC %yS);
-		%nSE = %prevQuad.sw;
-		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
-		%prevQuad.w = %q;
-	} else if (%prevQuad.posIsNorth(%pos)) {
-		%xW = getWord(%prevQuad.nw.pos, 0);
-		%xE = getWord(%prevQuad.ne.pos, 0);
-		%y = getWord(%pos, 1);
-		%nNW = newNode(%xW SPC %y);
-		%nNE = newNode(%xE SPC %y);
-		%nSW = %prevQuad.nw;
-		%nSE = %prevQuad.ne;
-		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
-		%prevQuad.n = %q;
-	} else if (%prevQuad.posIsSouth(%pos)) {
-		%xW = getWord(%prevQuad.sw.pos, 0);
-		%xE = getWord(%prevQuad.se.pos, 0);
-		%y = getWord(%pos, 1);
-		%nNW = %prevQuad.sw;
-		%nNE = %prevQuad.se;
-		%nSW = newNode(%xW SPC %y);
-		%nSE = newNode(%xE SPC %y);
-		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
-		%prevQuad.s = %q;
-	} else {
-		echo("not in valid area");
+	if (isObject(%prevQuad)) {
+		echo("Attempt extension");
+		if (%prevQuad.posIsEast(%pos)) {
+			%x = getWord(%pos, 0);
+			%yN = getWord(%prevQuad.ne.pos, 1);
+			%yS = getWord(%prevQuad.se.pos, 1);
+			%nNW = %prevQuad.ne;
+			%nNE = newNode(%x SPC %yN);
+			%nSW = %prevQuad.se;
+			%nSE = newNode(%x SPC %yS);
+			%q = newNavQuad(%nNW, %nNE, %nSW, %nSE); 
+			%prevQuad.e = %q;
+			$selectedQuad = %q;
+		} else if (%prevQuad.posIsWest(%pos)) {
+			%x = getWord(%pos, 0);
+			%yN = getWord(%prevQuad.nw.pos, 1);
+			%yS = getWord(%prevQuad.sw.pos, 1);
+			%nNW = newNode(%x SPC %yN);
+			%nNE = %prevQuad.nw;
+			%nSW = newNode(%x SPC %yS);
+			%nSE = %prevQuad.sw;
+			%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+			%prevQuad.w = %q;
+			$selectedQuad = %q;
+		} else if (%prevQuad.posIsNorth(%pos)) {
+			%xW = getWord(%prevQuad.nw.pos, 0);
+			%xE = getWord(%prevQuad.ne.pos, 0);
+			%y = getWord(%pos, 1);
+			%nNW = newNode(%xW SPC %y);
+			%nNE = newNode(%xE SPC %y);
+			%nSW = %prevQuad.nw;
+			%nSE = %prevQuad.ne;
+			%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+			%prevQuad.n = %q;
+			$selectedQuad = %q;
+		} else if (%prevQuad.posIsSouth(%pos)) {
+			%xW = getWord(%prevQuad.sw.pos, 0);
+			%xE = getWord(%prevQuad.se.pos, 0);
+			%y = getWord(%pos, 1);
+			%nNW = %prevQuad.sw;
+			%nNE = %prevQuad.se;
+			%nSW = newNode(%xW SPC %y);
+			%nSE = newNode(%xE SPC %y);
+			%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+			%prevQuad.s = %q;
+			$selectedQuad = %q;
+		} else {
+			echo("not in valid area");
+		}
 	}
 }
 
@@ -153,7 +159,11 @@ function NavMap::draw(%this)
 		%obj.setPosition(%qX SPC %qY);
 		%obj.setSize(%qW / 2.0, %qH / 2.0);
 		%obj.setLineColor("1 1 1 1");
-		%obj.setFillColor("0 0 1 0.5");
+		if (isObject($selectedQuad) && $selectedQuad == %q) {
+			%obj.setFillColor("0 1 1 0.5");
+		} else {
+			%obj.setFillColor("0 0 1 0.5");
+		}
 		%obj.setFillMode(true);
 		%obj.setPolyPrimitive(4);
 		mainScene.add(%obj);
@@ -279,6 +289,9 @@ function NavQuad::contains(%this, %pos)
 	%xE = getWord(%this.ne.pos, 0);
 	%yN = getWord(%this.nw.pos, 1);
 	%yS = getWord(%this.sw.pos, 1);
+	%x = getWord(%pos, 0);
+	%y = getWord(%pos, 1);
+	return isBetween(%x, %xW, %xE) && isBetween(%y, %yN, %yS);
 }
 
 function NavQuad::getX(%this)

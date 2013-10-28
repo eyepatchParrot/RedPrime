@@ -115,6 +115,9 @@ function SearchTest::updateMode( %this )
 	case $ADD_RECT:
 		%modeText = "Place new rect";
 		
+	case $SELECT_RECT:
+		%modeText = "Select rect";
+		
 	case $DEL_RECT:
 		%modeText = "Delete last rect";
 	}
@@ -126,6 +129,10 @@ function SearchTest::updateMode( %this )
 
 function SearchTest::setStartNode(%this, %pos)
 {
+	if (!isObject(%this.map) || !isObject(%this.map.getQuadAt(%pos))) {
+		return;
+	}
+	
 	if (!isObject(%this.startNode)) {
 		%size = 2;
 		%obj = new ShapeVector();
@@ -140,12 +147,20 @@ function SearchTest::setStartNode(%this, %pos)
 		%this.startNode = %obj;
 	}
 	%this.startNode.setPosition(%pos);
+	
+	if (isObject(%this.endNode)) {
+		// calculate path
+	}
 }
 
 //-----------------------------------------------------------------------------
 
 function SearchTest::setEndNode(%this, %pos)
 {
+	if (!isObject(%this.map) || !isObject(%this.map.getQuadAt(%pos))) {
+		return;
+	}
+	
 	if (!isObject(%this.endNode)) {
 		%size = 2;
 		%obj = new ShapeVector();
@@ -160,6 +175,10 @@ function SearchTest::setEndNode(%this, %pos)
 		%this.endNode = %obj;
 	}
 	%this.endNode.setPosition( %pos );
+	
+	if (isObject(%this.startNode)) {
+		// calculate path
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -186,13 +205,25 @@ function SearchTest::addRect(%this, %pos)
 		echo("Num quads :" SPC %this.map.numQuads());
 		echo("Num nodes :" SPC %this.map.numNodes());
 //		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
+		$selectedQuad = %this.map.rootQuad;
 	} else {
 		echo("* extending *");
-		%this.map.extendTo(%pos);
+		%this.map.extendTo(%pos, $selectedQuad);
 		echo("Num quads :" SPC %this.map.numQuads());
 		echo("Num nodes :" SPC %this.map.numNodes());
 //		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
 	}
 
+	%this.map.draw();
+}
+
+//-----------------------------------------------------------------------------
+
+function SearchTest::selectRect(%this, %pos)
+{
+	%newSelection = %this.map.getQuadAt(%pos);
+	if (isObject(%newSelection)) {
+		$selectedQuad = %newSelection;
+	}
 	%this.map.draw();
 }
