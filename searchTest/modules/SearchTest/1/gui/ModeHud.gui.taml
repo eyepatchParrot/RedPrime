@@ -1,0 +1,15 @@
+<GuiControl
+	Name="ModeHud"
+	Profile="GuiHudProfile"
+	Position = "0 0"
+	HorizSizing="left"
+    VertSizing="bottom"
+	Visible="1" >
+		
+	<GuiTextCtrl
+		Name="ModeText"
+		Profile="GuiDefaultProfile"
+		Position="0 0"
+		Extent = "200 40"
+		Text="Mode : Place start node" />
+</GuiControl>

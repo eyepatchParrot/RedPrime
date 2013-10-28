@@ -22,6 +22,9 @@
 
 function SearchTest::create( %this )
 {
+	exec("./gui/guiprofiles.cs");
+	%this.add( TamlRead("./gui/ModeHud.gui.taml") );
+
     // We need a main "Scene" we can use as our game world.  The place where sceneObjects play.
     // Give it a global name "mainScene" since we may want to access it directly in our scripts.
     new Scene(mainScene);
@@ -34,12 +37,22 @@ function SearchTest::create( %this )
     new SceneWindow(mainWindow);
     mainWindow.profile = new GuiControlProfile();
     Canvas.setContent(mainWindow);
+	
+	Canvas.pushDialog(ModeHud);
 
     // Finally, connect our scene into the viewport (or sceneWindow).
     // Note that a viewport comes with a camera built-in.
     mainWindow.setScene(mainScene);
     mainWindow.setCameraPosition( 0, 0 );
     mainWindow.setCameraSize( 100, 75 );
+	
+	exec("./scripts/consts.cs");
+	
+	new ScriptObject(InputManager);
+	mainWindow.addInputListener(InputManager);
+	exec("./scripts/controls.cs");
+	
+	exec("./scripts/navmap.cs");
 
     // load some scripts and variables
     // exec("./scripts/someScript.cs");
@@ -47,6 +60,8 @@ function SearchTest::create( %this )
     // let's do a little something to make sure we are up and running.
     // write "hello world!"  :)
     %this.sayHello();
+	
+	%this.updateMode();
 }
 
 //-----------------------------------------------------------------------------
@@ -68,5 +83,94 @@ function SearchTest::sayHello( %this )
     
     %phrase.TextAlignment = "Center";
     %phrase.Text = "Hello, World!";
-    mainScene.add( %phrase );    
+    mainScene.add( %phrase );
+
+	%a = new ScriptObject();
+	%b = new ScriptObject();
+	%a.v = 5;
+	%b.v = 2;
+	%a.n = %b;
+	%b.n = %a;
+	
+	echo("a.v" SPC %a.v SPC "b.v" SPC %b.v);
+	%a.n.v = 3;
+	%a.n.n.v = 7;
+	echo("a.v" SPC %a.v SPC "b.v" SPC %b.v);
+}
+
+//-----------------------------------------------------------------------------
+
+function SearchTest::updateMode( %this )
+{
+	switch ($Game::Mode) {
+	case $SET_START_NODE:
+		%modeText = "Place start node";
+		
+	case $SET_END_NODE:
+		%modeText = "Place end node";
+		
+	case $ADD_RECT:
+		%modeText = "Place new rect";
+		
+	case $DEL_RECT:
+		%modeText = "Delete last rect";
+	}
+
+	ModeText.setText("Mode :" SPC %modeText);
+}
+
+//-----------------------------------------------------------------------------
+
+function SearchTest::setStartNode(%this, %pos)
+{
+	if (!isObject(%this.startNode)) {
+		%size = 2;
+		%obj = new ShapeVector();
+		%obj.setSize(%size);
+		%obj.setLineColor("0 0 0 1");
+		%obj.setFillColor("0 1 0 1");
+		%obj.setFillMode(true);
+		%obj.setIsCircle(true);
+		%obj.setCircleRadius(%size);
+	
+		mainScene.add( %obj );
+		%this.startNode = %obj;
+	}
+	%this.startNode.setPosition(%pos);
+}
+
+//-----------------------------------------------------------------------------
+
+function SearchTest::setEndNode(%this, %pos)
+{
+	if (!isObject(%this.endNode)) {
+		%size = 2;
+		%obj = new ShapeVector();
+		%obj.setSize(%size);
+		%obj.setLineColor("0 0 0 1");
+		%obj.setFillColor("1 0 0 1");
+		%obj.setFillMode(true);
+		%obj.setIsCircle(true);
+		%obj.setCircleRadius(%size);
+		
+		mainScene.add( %obj );
+		%this.endNode = %obj;
+	}
+	%this.endNode.setPosition( %pos );
+}
+
+//-----------------------------------------------------------------------------
+
+function SearchTest::addRect(%this, %pos)
+{
+	if (!isObject(%this.rects)) {
+		%this.map = new ScriptObject();
+		%this.map.class = "NavMap";
+	}
+	
+	if (%this.map.isEmpty()) {
+		%this.map.initAt(%pos);
+	} else {
+		%this.map.extendTo(%pos);
+	}
 }

@@ -1,0 +1,7 @@
+SearchTest design
+
+Modes:
+	Place start
+	Place end
+	Place new rect
+	Delete last rect
