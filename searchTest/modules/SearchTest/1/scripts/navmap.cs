@@ -15,13 +15,24 @@ function NavMap::initAt(%this, %pNW, %pNE, %pSW, %pSE)
 	%this.rootQuad = newNavQuad(%nodeNW, %nodeNE, %nodeSW, %nodeSE);
 }
 
-function NavMap::extendTo(%this, %pos)
+function NavMap::getQuadAt(%this, %pos)
 {
-	%prevQuad = %this.nearestQuad(%pos);
+	%quads = %this.getQuads();
+	for (%i = 0; %i < %quads.getCount(); %i++) {
+		%q = %quads.getObject(%i);
+		if (%q.contains(%pos)) {
+			return %q;
+		}
+	}
+}
+
+function NavMap::extendTo(%this, %pos, %prevQuad)
+{
+	echo("Attempt extension");
 	if (%prevQuad.posIsEast(%pos)) {
 		%x = getWord(%pos, 0);
-		%yN = getWord(%prevQuad.ne, 1);
-		%yS = getWord(%prevQuad.se, 1);
+		%yN = getWord(%prevQuad.ne.pos, 1);
+		%yS = getWord(%prevQuad.se.pos, 1);
 		%nNW = %prevQuad.ne;
 		%nNE = newNode(%x SPC %yN);
 		%nSW = %prevQuad.se;
@@ -30,8 +41,8 @@ function NavMap::extendTo(%this, %pos)
 		%prevQuad.e = %q;
 	} else if (%prevQuad.posIsWest(%pos)) {
 		%x = getWord(%pos, 0);
-		%yN = getWord(%prevQuad.nw, 1);
-		%yS = getWord(%prevQuad.sw, 1);
+		%yN = getWord(%prevQuad.nw.pos, 1);
+		%yS = getWord(%prevQuad.sw.pos, 1);
 		%nNW = newNode(%x SPC %yN);
 		%nNE = %prevQuad.nw;
 		%nSW = newNode(%x SPC %yS);
@@ -39,8 +50,8 @@ function NavMap::extendTo(%this, %pos)
 		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
 		%prevQuad.w = %q;
 	} else if (%prevQuad.posIsNorth(%pos)) {
-		%xW = getWord(%prevQuad.nw, 0);
-		%xE = getWord(%prevQuad.ne, 0);
+		%xW = getWord(%prevQuad.nw.pos, 0);
+		%xE = getWord(%prevQuad.ne.pos, 0);
 		%y = getWord(%pos, 1);
 		%nNW = newNode(%xW SPC %y);
 		%nNE = newNode(%xE SPC %y);
@@ -49,8 +60,8 @@ function NavMap::extendTo(%this, %pos)
 		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
 		%prevQuad.n = %q;
 	} else if (%prevQuad.posIsSouth(%pos)) {
-		%xW = getWord(%prevQuad.sw, 0);
-		%xE = getWord(%prevQuad.se, 0);
+		%xW = getWord(%prevQuad.sw.pos, 0);
+		%xE = getWord(%prevQuad.se.pos, 0);
 		%y = getWord(%pos, 1);
 		%nNW = %prevQuad.sw;
 		%nNE = %prevQuad.se;
@@ -58,12 +69,14 @@ function NavMap::extendTo(%this, %pos)
 		%nSE = newNode(%xE SPC %y);
 		%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
 		%prevQuad.s = %q;
+	} else {
+		echo("not in valid area");
 	}
 }
 
-function NavMap::isEmpty(this)
+function NavMap::isEmpty(%this)
 {
-	return isObject(%this.rootQuad);
+	return !isObject(%this.rootQuad);
 }
 
 function NavMap::nearestQuad(%this, %pos)
@@ -119,6 +132,64 @@ function NavMap::getQuads(%this)
 	return %this.rootQuad.getQuads();
 }
 
+// ** TODO: Needs to be able to handle non-rectangular objs **
+function NavMap::draw(%this)
+{
+	if (!isObject(%this.drawObjs)) {
+		echo("new simset");
+		%this.drawObjs = new SimSet();
+	} else {
+		echo("old simset");
+		%this.drawObjs.deleteObjects();
+	}
+	%quads = %this.getQuads();
+	for (%i = 0; %i < %quads.getCount(); %i++) {
+		%q = %quads.getObject(%i);
+		%qX = %q.getX();
+		%qY = %q.getY();
+		%qW = %q.getW();
+		%qH = %q.getH();
+		%obj = new ShapeVector();
+		%obj.setPosition(%qX SPC %qY);
+		%obj.setSize(%qW / 2.0, %qH / 2.0);
+		%obj.setLineColor("1 1 1 1");
+		%obj.setFillColor("0 0 1 0.5");
+		%obj.setFillMode(true);
+		%obj.setPolyPrimitive(4);
+		mainScene.add(%obj);
+		%this.drawObjs.add(%obj);
+		
+		echo("draw ne");
+		%oNE = newCircle(%q.ne.pos);
+		mainScene.add(%oNE);
+		%this.drawObjs.add(%oNE);
+		
+		echo("draw se");
+		%oSE = newCircle(%q.se.pos);
+		mainScene.add(%oSE);
+		%this.drawObjs.add(%oSE);
+		
+		echo("draw nw");
+		%oNW = newCircle(%q.nw.pos);
+		mainScene.add(%oNW);
+		%this.drawObjs.add(%oNW);
+		
+		echo("draw sw");
+		%oSW = newCircle(%q.sw.pos);
+		mainScene.add(%oSW);
+		%this.drawObjs.add(%oSW);
+	}
+}
+
+function newCircle(%pos)
+{
+	%obj = new ShapeVector();
+	%obj.setPosition(%pos);
+	%obj.setSize(1);
+	%obj.setIsCircle(true);
+	return %obj;
+}
+
 function newNavQuad(%nNW, %nNE, %nSW, %nSE)
 {
 	%quad = new ScriptObject();
@@ -157,21 +228,27 @@ function NavQuad::distTo(%this, %pos)
 
 function NavQuad::posIsWest(%this, %pos)
 {
+	echo("posIsWest");
 	%x = getWord(%pos, 0);
 	%y = getWord(%pos, 1);
 	%yN = getWord(%this.nw.pos, 1);
 	%yS = getWord(%this.sw.pos, 1);
 	%pX = projectX(%y, %this.nw.pos, %this.sw.pos);
+	echo("isBetween" SPC %y SPC %yN SPC %yS SPC isBetween(%y, %yN, %yS));
+	echo("projectX" SPC %x SPC %pX SPC %x > %pX);
 	return isBetween(%y, %yN, %yS) && %x < %pX;
 }
 
 function NavQuad::posIsEast(%this, %pos)
 {
+	echo("posIsEast");
 	%x = getWord(%pos, 0);
 	%y = getWord(%pos, 1);
 	%yN = getWord(%this.ne.pos, 1);
 	%yS = getWord(%this.se.pos, 1);
 	%pX = projectX(%y, %this.ne.pos, %this.se.pos);
+	echo("isBetween" SPC %y SPC %yN SPC %yS SPC isBetween(%y, %yN, %yS));
+	echo("projectX" SPC %x SPC %pX SPC %x > %pX);
 	return isBetween(%y, %yN, %yS) && %x > %pX;
 }
 
@@ -193,6 +270,54 @@ function NavQuad::posIsSouth(%this, %pos)
 	%xE = getWord(%this.se.pos, 0);
 	%pY = projectY(%x, %this.sw.pos, %this.se.pos);
 	return isBetween(%x, %xW, %xE) && %y < %pY;
+}
+
+// ** TODO: Make work for all quadrilaterals rather than just rectangles
+function NavQuad::contains(%this, %pos)
+{
+	%xW = getWord(%this.nw.pos, 0);
+	%xE = getWord(%this.ne.pos, 0);
+	%yN = getWord(%this.nw.pos, 1);
+	%yS = getWord(%this.sw.pos, 1);
+}
+
+function NavQuad::getX(%this)
+{
+	%xNW = getWord(%this.nw.pos, 0);
+	%xSW = getWord(%this.sw.pos, 0);
+	return mGetMin(%xNW, %xSW) + %this.getW() / 2.0;
+}
+
+function NavQuad::getY(%this)
+{
+	%ySW = getWord(%this.sw.pos, 1);
+	%ySE = getWord(%this.se.pos, 1);
+	return mGetMin(%ySW, %ySE) + %this.getH() / 2.0;
+}
+
+function NavQuad::getW(%this)
+{
+	%xNE = getWord(%this.ne.pos, 0);
+	%xNW = getWord(%this.nw.pos, 0);
+	%xSW = getWord(%this.sw.pos, 0);
+	%xSE = getWord(%this.se.pos, 0);
+	return mGetMax(%xNE, %xSE) - mGetMin(%xNW, %xSW);
+}
+
+function NavQuad::getH(%this)
+{
+	%yNW = getWord(%this.nw.pos, 1);
+	%yNE = getWord(%this.ne.pos, 1);
+	%ySW = getWord(%this.sw.pos, 1);
+	%ySE = getWord(%this.se.pos, 1);
+	return mGetMax(%yNW, %yNE) - mGetMin(%ySW, %ySE);
+}
+
+function isBetween(%v, %a, %b)
+{
+	%min = mGetMin(%a, %b);
+	%max = mGetMax(%a, %b);
+	return %v > %min && %v < %max;
 }
 
 function projectX(%y, %p1, %p2)

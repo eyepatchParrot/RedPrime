@@ -189,9 +189,10 @@ function SearchTest::addRect(%this, %pos)
 	} else {
 		echo("* extending *");
 		%this.map.extendTo(%pos);
-		echo("Num nodes :" SPC %this.map.nodes.getCount());
+		echo("Num quads :" SPC %this.map.numQuads());
+		echo("Num nodes :" SPC %this.map.numNodes());
 //		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
 	}
 
-//	%this.map.draw();
+	%this.map.draw();
 }
