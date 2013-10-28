@@ -23,7 +23,10 @@
 function SearchTest::create( %this )
 {
 	exec("./gui/guiprofiles.cs");
+	exec("./scripts/console.cs");
+	%this.add( TamlRead("./gui/ConsoleDialog.gui.taml") );
 	%this.add( TamlRead("./gui/ModeHud.gui.taml") );
+	GlobalActionMap.bind( keyboard, "ctrl tilde", toggleConsole );
 
     // We need a main "Scene" we can use as our game world.  The place where sceneObjects play.
     // Give it a global name "mainScene" since we may want to access it directly in our scripts.
@@ -163,14 +166,31 @@ function SearchTest::setEndNode(%this, %pos)
 
 function SearchTest::addRect(%this, %pos)
 {
-	if (!isObject(%this.rects)) {
-		%this.map = new ScriptObject();
-		%this.map.class = "NavMap";
+	if (!isObject(%this.map)) {
+		%this.map = newMap();
 	}
 	
+	%size = 20.0;
+	
 	if (%this.map.isEmpty()) {
-		%this.map.initAt(%pos);
+		%xW = getWord(%pos, 0) - %size / 2.0;
+		%xE = getWord(%pos, 0) + %size / 2.0;
+		%yN = getWord(%pos, 1) + %size / 2.0;
+		%yS = getWord(%pos, 1) - %size / 2.0;
+		%pNW = %xW SPC %yN;
+		%pNE = %xE SPC %yN;
+		%pSW = %xW SPC %yS;
+		%pSE = %xE SPC %yS;
+		echo("pNW" SPC %pNW SPC "pNE" SPC %pNE SPC "pSW" SPC %pSW SPC "pSE" SPC %pSE);
+		%this.map.initAt(%pNW, %pNE, %pSW, %pSE);
+		echo("Num nodes :" SPC %this.map.nodes.getCount());
+		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
 	} else {
+		echo("* extending *");
 		%this.map.extendTo(%pos);
+		echo("Num nodes :" SPC %this.map.nodes.getCount());
+		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
 	}
+
+	%this.map.draw();
 }
