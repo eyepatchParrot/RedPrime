@@ -56,6 +56,7 @@ function SearchTest::create( %this )
 	exec("./scripts/controls.cs");
 	
 	exec("./scripts/navmap.cs");
+	exec("./scripts/navquad.cs");
 	exec("./scripts/utility.cs");
 
     // load some scripts and variables
@@ -201,18 +202,9 @@ function SearchTest::addRect(%this, %pos)
 		%pNE = %xE SPC %yN;
 		%pSW = %xW SPC %yS;
 		%pSE = %xE SPC %yS;
-		echo("pNW" SPC %pNW SPC "pNE" SPC %pNE SPC "pSW" SPC %pSW SPC "pSE" SPC %pSE);
-		%this.map.initAt(%pNW, %pNE, %pSW, %pSE);
-		echo("Num quads :" SPC %this.map.numQuads());
-		echo("Num nodes :" SPC %this.map.numNodes());
-//		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
-		$selectedQuad = %this.map.rootQuad;
+		$selectedQuad = %this.map.initAt(%pNW, %pNE, %pSW, %pSE);
 	} else {
-		echo("* extending *");
-		%this.map.extendTo(%pos, $selectedQuad);
-		echo("Num quads :" SPC %this.map.numQuads());
-		echo("Num nodes :" SPC %this.map.numNodes());
-//		echo("Num Edges :" SPC %this.map.nodes.getObject(0).getEdges().getCount());
+		$selectedQuad = %this.map.extendTo(%pos, $selectedQuad);
 	}
 
 	%this.map.draw();
@@ -270,7 +262,7 @@ function SearchTest::calculatePath(%this)
 		echo("numNeighbors :" SPC %neighbors.getCount());
 		for (%i = 0; %i < %neighbors.getCount(); %i++) {
 			%neighbor = %neighbors.getObject(%i);
-			%g = %n.G + getMoveCost(%n, %neighbor);
+			%g = %n.G + distTo(%n, %neighbor);
 			if (%openNodes.isMember(%neighbor) && %g < %neighbor.G) {
 				%openNodes.remove(%neighbor);
 			}
@@ -307,7 +299,7 @@ function SearchTest::getNeighbors(%this, %from, %endNode)
 {
 	%neighbors = %this.map.getNeighbors(%from);
 	echo("check endNode visibility");
-	%isVisible = %this.map.isVisibleFrom(%from, %endNode);
+	%isVisible = %this.map.lineConnects(%from, %endNode);
 	echo("endNode is visible" SPC %isVisible);
 	if (%isVisible) %neighbors.add(%endNode);
 	
@@ -325,10 +317,10 @@ function SearchTest::drawNodePath(%this, %nodePath)
 			%obj.setSize(2);
 			%this.drawObjs.add(%obj);
 		}
-		%dist = distTo(%a.pos, %b.pos);
+		%distSq = distToSq(%a.pos, %b.pos);
 		%angle = mDegToRad(Vector2AngleToPoint(%a.pos, %b.pos) - 90.0);
 		// echo("dist :" SPC %dist SPC "angle :" SPC %angle);
-		for (%i = 1; %i * %i < %dist; %i++) {
+		for (%i = 1; %i * %i < %distSq; %i++) {
 			%objPos = projectPos(%a.pos, %angle, %i);
 			%obj = newCircle(%objPos);
 			mainScene.add(%obj);

@@ -1,3 +1,11 @@
+function newCircle(%pos)
+{
+	%obj = new ShapeVector();
+	%obj.setPosition(%pos);
+	%obj.setSize(1);
+	%obj.setIsCircle(true);
+	return %obj;
+}
 function isBetween(%v, %a, %b)
 {
 	%min = mGetMin(%a, %b);
@@ -57,7 +65,7 @@ function lastObject(%set)
 	return %set.getObject(%set.getCount() - 1);
 }
 
-function distTo(%aPos, %bPos)
+function distToSq(%aPos, %bPos)
 {
 	%xDist = getWord(%aPos, 0) - getWord(%bPos, 0);
 	%yDist = getWord(%aPos, 1) - getWord(%bPos, 1);
@@ -79,9 +87,9 @@ function findCheapestNode(%set)
 	return %bestNode;
 }
 
-function getMoveCost(%a, %b)
+function distTo(%a, %b)
 {
-	return mSqrt(distTo(%a.pos, %b.pos));
+	return mSqrt(distToSq(%a.pos, %b.pos));
 }
 
 function getH(%a, %b)
