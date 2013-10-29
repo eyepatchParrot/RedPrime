@@ -122,6 +122,9 @@ function SearchTest::updateMode( %this )
 		
 	case $DEL_RECT:
 		%modeText = "Delete last rect";
+		
+	case $CONNECT_RECT:
+		%modeText = "Connect rects";
 	}
 
 	ModeText.setText("Mode :" SPC %modeText);
@@ -217,6 +220,17 @@ function SearchTest::selectRect(%this, %pos)
 	%newSelection = %this.map.getQuadAt(%pos);
 	if (isObject(%newSelection)) {
 		$selectedQuad = %newSelection;
+	}
+	%this.map.draw();
+}
+
+function SearchTest::connectRect(%this, %pos)
+{
+	%otherQuad = %this.map.getQuadAt(%pos);
+	echo("click connect");
+	if (isObject($selectedQuad) && isObject(%otherQuad)) {
+		echo("try connect");
+		%this.map.connect($selectedQuad, %otherQuad);
 	}
 	%this.map.draw();
 }

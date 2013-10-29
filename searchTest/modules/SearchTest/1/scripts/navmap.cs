@@ -4,6 +4,7 @@
 // NavMap::isEmpty(%this) %isEmpty
 // NavMap::initAt(%this, %pNW, %pNE, %pSW, %pSE) %rootQuad
 // NavMap::extendTo(%this, %pos, %quad) %newQuad
+// NavMap::connect(%this, %aQuad, %bQuad) %newQuad
 // NavMap::getQuadAt(%this, %pos) %quad
 // NavMap::getAllQuadsAt(%this, %pos) %quads
 // NavMap::getNeighbors(%this, %pos) %neighbors
@@ -49,8 +50,28 @@ function NavMap::extendTo(%this, %pos, %prevQuad)
 		%q = newNavQuadNorthOf(%prevQuad, %pos);
 	} else if (%prevQuad.posIsSouth(%pos)) {
 		%q = newNavQuadSouthOf(%prevQuad, %pos);
+	} else {
+		echo("%pos not within %prevQuad");
 	}
 
+	return %q;
+}
+
+function NavMap::connect(%this, %aQuad, %bQuad)
+{
+	%pos = %bQuad.getCenterX() SPC %bQuad.getCenterY();
+	if (%aQuad.posIsNorth(%pos)) {
+		echo("connect n");
+		%q = %aQuad.connectNorthTo(%bQuad);
+	} else if (%aQuad.posIsEast(%pos)) {
+		%q = %aQuad.connectEastTo(%bQuad);
+	} else if (%aQuad.posIsSouth(%pos)) {
+		%q = %aQuad.connectSouthTo(%bQuad);
+	} else if (%aQuad.posIsWest(%pos)) {
+		%q = %aQuad.connectWestTo(%bQuad);
+	} else {
+		echo("can't connect");
+	}
 	return %q;
 }
 
@@ -127,6 +148,9 @@ function NavMap::draw(%this)
 	if (!isObject(%this.drawObjs)) {
 		%this.drawObjs = new SimSet();
 	} else {
+		for (%i = 0; %i < %this.drawObjs.getCount(); %i++) {
+			mainScene.remove(%this.drawObjs.getObject(%i));
+		}
 		%this.drawObjs.deleteObjects();
 	}
 	%quads = %this.getQuads();

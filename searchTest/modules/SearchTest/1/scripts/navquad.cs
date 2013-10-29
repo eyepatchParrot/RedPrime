@@ -8,6 +8,7 @@
 // newNavQuadWestOf(%prevQuad, %pos) %quad
 // newNavQuadNorthOf(%prevQuad, %pos) %quad
 // newNavQuadSouthOf(%prevQuad, %pos) %quad
+// newConnectingQuad(%aQuad, %bQuad) %quad
 // NavQuad::contains(%this, %pos) %doesContain
 // NavQuad::containsNode(%this, %node) %doesContain
 // NavQuad;:getQuads(%this, %quads) %quads
@@ -89,6 +90,69 @@ function newNavQuadSouthOf(%prevQuad, %pos)
 	%prevQuad.s = %q;
 }
 
+function NavQuad::connectNorthTo(%this, %bQ)
+{
+	if (%this.nw == %bQ.sw && %this.ne == %bQ.se) {
+		%this.n = %bQ;
+		%bQ.s = %this;
+		return %this;
+	}
+	
+	%q = newNavQuad(%bQ.sw, %bQ.se, %this.nw, %this.ne);
+	%this.n = %q;
+	%q.n = %bQ;
+	%bQ.s = %q;
+	%q.s = %this;
+	
+	return %q;
+}
+
+function NavQuad::connectEastTo(%this, %bQ)
+{
+	if (%this.ne == %bQ.nw && %this.se == %bQ.sw) {
+		%this.e = %bQ;
+		%bQ.w = %this;
+		return %this;
+	}
+	
+	%q = newNavQuad(%this.ne, %bQ.nw, %this.se, %bQ.sw);
+	%this.e = %q;
+	%q.e = %bQ;
+	%bQ.w = %q;
+	%q.w = %this;
+	return %q;
+}
+
+function NavQuad::connectSouthTo(%this, %bQ)
+{
+	if (%this.sw == %bQ.nw && %this.se == %bQ.ne) {
+		%this.s = %bQ;
+		%bQ.n = %this;
+		return %this;
+	}
+	
+	%q = newNavQuad(%this.sw, %this.se, %bQ.nw, %bQ.ne);
+	%this.s = %q;
+	%q.s = %bQ;
+	%bQ.n = q;
+	%q.n = %this;
+}
+
+function NavQuad::connectWestTo(%this, %bQ)
+{
+	if (%this.nw == %bQ.ne && %this.sw == %bQ.se) {
+		%this.w = %bQ;
+		%bQ.e = %this;
+		return %this;
+	}
+	
+	%q = newNavQuad(%bQ.ne, %this.nw, %bQ.se, %this.sw);
+	%this.w = %q;
+	%q.w = %bQ;
+	%bQ.e = q;
+	%q.e = %this;
+}
+
 // ** TODO: Make work for all quadrilaterals rather than just rectangles
 function NavQuad::contains(%this, %pos)
 {
@@ -144,6 +208,7 @@ function NavQuad::posIsEast(%this, %pos)
 	%yN = getWord(%this.ne.pos, 1);
 	%yS = getWord(%this.se.pos, 1);
 	%pX = projectX(%y, %this.ne.pos, %this.se.pos);
+	echo("y" SPC %y SPC "yN" SPC %yN SPC "yS" SPC %yS SPC "x" SPC %x SPC "pX" SPC %pX);
 	return isBetween(%y, %yN, %yS) && %x > %pX;
 }
 

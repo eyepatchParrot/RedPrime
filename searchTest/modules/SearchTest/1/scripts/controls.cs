@@ -15,11 +15,14 @@ function InputManager::onTouchDown(%this, %touchId, %worldPosition)
 		
 	case $DEL_RECT:
 		SearchTest.deleteRect();
+		
+	case $CONNECT_RECT:
+		SearchTest.connectRect(%worldPosition);
 	}
 }
 
 function InputManager::onRightMouseDown(%this, %touchId, %worldPosition)
 {
-	$Game::Mode = ($Game::Mode + 1) % 5;
+	$Game::Mode = ($Game::Mode + 1) % 6;
 	SearchTest.updateMode();
 }
