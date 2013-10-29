@@ -31,27 +31,23 @@ function NavMap::getNeighbors(%this, %node)
 	%neighbors = new SimSet();
 	%adjQuads = %this.getAdjQuads(%node);
 	
-	for (%i = 0; %i < %adjQuads.getCount(); %i++) {
-		%q = %adjQuads.getObject(%i);
-		if (%q.nw != %node) %neighbors.add(%q.nw);
-		if (%q.ne != %node) %neighbors.add(%q.ne);
-		if (%q.sw != %node) %neighbors.add(%q.sw);
-		if (%q.se != %node) %neighbors.add(%q.se);
-	}
-	
-	// %visibleQuads = %this.getVisibleQuads(%node);
-	// for (%i = 0; %i < visibleQuads.getCount(); %i++) {
-		// %q = %visibleQuads.getObject(%i);
-	
-	// %adjQuad = %this.getAdjQuad(%node);
-	// %visibleQuads = %this.getVisibleQuads(%adjQuad, %node);
-	// for (%i = 0; %i < %visibleQuads.getCount(); %i++) {
-		// %q = %visibleQuads.getObject(%i);
-		// if (%this.isVisibleFrom(%from, %q.nw) && !neighbors.isMember(%q.nw)) %neighbors.add(%q.nw);
-		// if (%this.isVisibleFrom(%from, %q.ne) && !neighbors.isMember(%q.ne)) %neighbors.add(%q.ne);
-		// if (%this.isVisibleFrom(%from, %q.sw) && !neighbors.isMember(%q.sw)) %neighbors.add(%q.sw);
-		// if (%this.isVisibleFrom(%from, %q.se) && !neighbors.isMember(%q.se)) %neighbors.add(%q.se);
+	// for (%i = 0; %i < %adjQuads.getCount(); %i++) {
+		// %q = %adjQuads.getObject(%i);
+		// if (%q.nw != %node) %neighbors.add(%q.nw);
+		// if (%q.ne != %node) %neighbors.add(%q.ne);
+		// if (%q.sw != %node) %neighbors.add(%q.sw);
+		// if (%q.se != %node) %neighbors.add(%q.se);
 	// }
+	
+	%visibleQuads = %this.getVisibleQuads(%this.getAdjQuad(%node), %node, %adjQuads);
+	for (%i = 0; %i < %visibleQuads.getCount(); %i++) {
+		%q = %visibleQuads.getObject(%i);
+		if (!%neighbors.isMember(%q.nw) && %this.isVisibleFrom(%node, %q.nw)) %neighbors.add(%q.nw);
+		if (!%neighbors.isMember(%q.ne) && %this.isVisibleFrom(%node, %q.ne)) %neighbors.add(%q.ne);
+		if (!%neighbors.isMember(%q.sw) && %this.isVisibleFrom(%node, %q.sw)) %neighbors.add(%q.sw);
+		if (!%neighbors.isMember(%q.se) && %this.isVisibleFrom(%node, %q.se)) %neighbors.add(%q.se);
+	}
+
 	return %neighbors;
 }
 
@@ -65,31 +61,30 @@ function NavMap::getAdjQuads(%this, %node) {
 	return %adjQuads;
 }
 	
+function NavMap::getVisibleQuads(%this, %quad, %node, %quads)
+{
+	%quads.add(%quad);
+	if (isObject(%quad.n) && !%quads.isMember(%quad.n) && %this.quadIsVisibleFrom(%node, %quad.n)) %this.getVisibleQuads(%quad.n, %node, %quads);
+	if (isObject(%quad.e) && !%quads.isMember(%quad.e) && %this.quadIsVisibleFrom(%node, %quad.e)) %this.getVisibleQuads(%quad.e, %node, %quads);
+	if (isObject(%quad.s) && !%quads.isMember(%quad.s) && %this.quadIsVisibleFrom(%node, %quad.s)) %this.getVisibleQuads(%quad.s, %node, %quads);
+	if (isObject(%quad.w) && !%quads.isMember(%quad.w) && %this.quadIsVisibleFrom(%node, %quad.w)) %this.getVisiblequads(%quad.w, %node, %quads);
+	return %quads;
+}
 
-// function NavMap::getVisibleQuads(%this, %quad, %node, %quads)
-// {
-	// %quads.add(%quad);
-	// if (isObject(%quad.n) && !%quads.isMember(%quad.n) && %this.quadIsVisibleFrom(%node, %quad.n)) %this.getVisibleQuads(%quad.n, %node, %quads);
-	// if (isObject(%quad.e) && !%quads.isMember(%quad.e) && %this.quadIsVisibleFrom(%node, %quad.e)) %this.getVisibleQuads(%quad.e, %node, %quads);
-	// if (isObject(%quad.s) && !%quads.isMember(%quad.s) && %this.quadIsVisibleFrom(%node, %quad.s)) %this.getVisibleQuads(%quad.s, %node, %quads);
-	// if (isObject(%quad.w) && !%quads.isMember(%quad.w) && %this.quadIsVisibleFrom(%node, %quad.w)) %this.getVisiblequads(%quad.w, %node, %quads);
-	// return %quads;
-// }
+function NavMap::quadIsVisibleFrom(%this, %node, %quad)
+{
+	return %this.isVisibleFrom(%node, %quad.nw) || %this.isVisibleFrom(%node, %quad.ne) || %this.isVisibleFrom(%node, %quad.sw) || %this.isVisibleFrom(%node, %quad.se);
+}
 
-// function NavMap::quadIsVisibleFrom(%this, %node, %quad)
-// {
-	// return %this.isVisibleFrom(%node, %quad.nw) || %this.isVisibleFrom(%node, %quad.ne) || %this.isVisibleFrom(%node, %quad.sw) || %this.isVisibleFrom(%node, %quad.se);
-// }
-
-// function NavMap::getAdjQuad(%this, %node)
-// {
-	// %quads = %this.getQuads();
-	// for (%i = 0; %i < %quads.getCount(); %i++) {
-		// %q = %quads.getObject(%i);
-		// if (%q.containsNode(%node)) return %q;
-	// }
-	// return %this.getQuadAt(%node.pos);
-// }
+function NavMap::getAdjQuad(%this, %node)
+{
+	%quads = %this.getQuads();
+	for (%i = 0; %i < %quads.getCount(); %i++) {
+		%q = %quads.getObject(%i);
+		if (%q.containsNode(%node)) return %q;
+	}
+	return %this.getQuadAt(%node.pos);
+}
 
 // NavMap::isVisibleFrom
 function NavMap::isVisibleFrom(%this, %a, %b) {
@@ -98,9 +93,93 @@ function NavMap::isVisibleFrom(%this, %a, %b) {
 		%q = %adjQuads.getObject(%i);
 		if (%q.containsNode(%b)) return true;
 	}
+	
+	if (%this.lineConnects(%a, %b)) return true;
+	
 	return false;
 }
+
+function NavMap::lineConnects(%this, %a, %b) {
+	%q = %this.getAdjQuad(%a);
+	%endQ = %this.getAdjQuad(%b);
+	%line = newLine(%a.pos, %b.pos);
+	while (!%q.containsNode(%b)) {
+		%intersect = %this.getQuadIntersect(%q, %pQ, %line);
+		if (!isObject(%intersect)) return false;
+		%pQ = %q;
+		%q = %intersect;
+	}
+}
+
+function NavMap::getQuadIntersect(%this, %q, %pQ, %line)
+{
+	%wLine = newLine(%q.nw, %q.sw);
+	%nLine = newLine(%q.nw, %q.ne);
+	%eLine = newLine(%q.ne, %q.se);
+	%sLine = newLine(%q.sw, %q.se);
+	if (%q.w != %pQ && %line.intersects(%wLine)) return %q.w;
+	if (%q.n != %pQ && %line.intersects(%nLine)) return %q.n;
+	if (%q.e != %pQ && %line.intersects(%eLine)) return %q.e;
+	if (%q.s != %pQ && %line.intersects(%sLine)) return %q.s;
+}
+
+function newLine(%a, %b)
+{
+	%line = new ScriptObject();
+	%line.class = "NavLine";
+	%line.p1 = %a;
+	%line.p2 = %b;
+	%x1 = getWord(%a, 0);
+	%y1 = getWord(%a, 1);
+	%x2 = getWord(%b, 0);
+	%y2 = getWord(%b, 1);
+	%line.A = %y2 - %y1;
+	%line.B = %x1 - %x2;
+	%line.C = %line.A * %x1 + %line.B * %y1;
+	return %line;
+}
+
+function NavLine::intersects(%this, %b)
+{
+	%A_1 = %this.A;
+	%B_1 = %this.B;
+	%C_1 = %this.C;
+	%A_2 = %b.A;
+	%B_2 = %b.B;
+	%C_2 = %b.C;
+	%det = %A_1 * %B_2 - %A_2 * %B_1;
+	if (mAbs(%det) < 0.1) return false;
+	%x = (%B_2 * %C_1 - %B_1 * %C_2) / %det;
+	%y = (%A_1 * %C_2 - %A_2 * %C_1) / %det;
 	
+	%minX = mGetMax(%this.getMinX(), %b.getMinX());
+	%minY = mGetMax(%this.getMinY(), %b.getMinY());
+	%maxX = mGetMin(%this.getMaxY(), %b.getMaxY());
+	%maxY = mGetMin(%this.getMaxY(), %b.getMaxY());
+	return %x >= %minX && %x <= %maxX && %y >= %minY && %y <= %maxY;
+}
+
+function NavLine::getMinX(%this)
+{
+	%x1 = getWord(%this.p1, 0);
+	%x2 = getWord(%this.p2, 0);
+	return mGetMin(%x1, %x2);
+}
+
+function NavLine::getMaxX(%this)
+{
+	return mGetMax(getWord(%this.p1, 0), getWord(%this.p2, 0));
+}
+
+function NavLine::getMinY(%this)
+{
+	return mGetMin(getWord(%this.p1, 1), getWord(%this.p2, 1));
+}
+
+function NavLine::getMaxY(%this)
+{
+	return mGetMax(getWord(%this.p1, 1), getWord(%this.p2, 1));
+}
 
 function NavMap::extendTo(%this, %pos, %prevQuad)
 {
