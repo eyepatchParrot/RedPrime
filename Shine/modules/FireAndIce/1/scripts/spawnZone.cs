@@ -1,6 +1,6 @@
 function createSpawnZones()
 {
-	%zoneSize = 3;
+	%zoneSize = $Game::ZoneSize;
 	%halfZoneSize = %zoneSize / 2.0;
 	%halfArenaWidth = $Game::ArenaWidth / 2.0;
 	%halfArenaHeight = $Game::ArenaHeight / 2.0;
@@ -98,7 +98,7 @@ function SpawnZone::spawnThug( %this )
 			%spawnX = %x + getRandom(-(%sizeX / 2.0), %sizeX / 2.0);
 			%spawnY = %y;
 		}
-		createThug(%spawnX SPC %spawnY);
+		// createThug(%spawnX SPC %spawnY);
 		%this.numEnemiesToSpawn--;
 	}
 	%this.schedule( %this.freq, spawnThug );

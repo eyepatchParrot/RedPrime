@@ -41,6 +41,9 @@ function FireAndIce::create( %this )
 	exec("./scripts/faceMouseBehavior.cs");
 	exec("./scripts/moveAnimationBehavior.cs");
 	exec("./scripts/dropPickupBehavior.cs");
+	exec("./scripts/navmap.cs");
+	exec("./scripts/navquad.cs");
+	exec("./scripts/utility.cs");
 	
 	FireAndIce.add( TamlRead("./gui/ConsoleDialog.gui.taml") );
 	GlobalActionMap.bind( keyboard, "ctrl tilde", toggleConsole );
@@ -70,8 +73,8 @@ function FireAndIce::create( %this )
 	
 	%this.turnSoundOn( $Game::soundOn );
 	
-	%this.startMainMenu();
-	//%this.startGame();
+	// %this.startMainMenu();
+	%this.startGame();
 }
 
 //-----------------------------------------------------------------------------
@@ -118,7 +121,7 @@ function FireAndIce::startGame( %this )
     // Note that a viewport comes with a camera built-in.
     mainWindow.setScene(mainScene);
     mainWindow.setCameraPosition( 0, 0 );
-    mainWindow.setCameraSize( $Game::ScreenWidth, $Game::ScreenHeight );
+    mainWindow.setCameraSize( $Game::ScreenWidth * 2, $Game::ScreenHeight * 2 );
 	%viewRight = $Game::ArenaWidth / 2.0;
 	%viewLeft = -%viewRight;
 	%viewTop = $Game::ArenaHeight / 2.0;
@@ -131,6 +134,7 @@ function FireAndIce::startGame( %this )
 	createSpawnZones();
 	createPlayerCharacter();
 	updateHud();
+	%this.setNavMap();
 	
 	mainWindow.mount(PlayerCharacter);
 	
@@ -221,4 +225,49 @@ function FireAndIce::turnSoundOn( %this, %on )
 function FireAndIce::toggleSound( %this )
 {
 	%this.turnSoundOn( !$Game::soundOn );
+}
+
+//-----------------------------------------------------------------------------
+
+function FireAndIce::setNavMap( %this )
+{
+	%halfArenaWidth = $Game::ArenaWidth / 2.0;
+	%zoneX = $Game::ArenaWidth / 2.0 + $Game::ZoneSize / 2.0;
+	%zoneY = $Game::ArenaHeight / 2.0 + $Game::ZoneSize / 2.0;
+	%leftX = -%zoneX;
+	%rightX = -%halfArenaWidth / 2.0;
+	%topY = %zoneY;
+	%lowY = %topY - 3.5;
+	%this.navMap = newMap();
+	%root = %this.navMap.initAt(%leftX SPC %topY, %rightX SPC %topY, %leftX SPC %lowY, %rightX SPC %lowY);
+	
+	%y = (%topY + %lowY) / 2.0;
+	%x = 1.0;
+	%cur = %this.navMap.extendTo(%x SPC %y, %root);
+	
+	%x = 3.0;
+	%cur = %this.navMap.extendTo(%x SPC %y, %cur);
+	
+	%x = 2.0;
+	%y = 3.5;
+	%alley = %this.navMap.extendTo(%x SPC %y, %cur);
+	
+	%x = 6;
+	%y = 9;
+	%cur = %this.navMap.extendTo(%x SPC %y, %cur);
+	
+	%x = 5;
+	%y = 5.75;
+	%this.navMap.extendTo(%x SPC %y, %cur);
+	
+	%y = 9;
+	%cur = %this.navMap.extendTo(%zoneX SPC %y, %cur);
+	
+	%x = 16;
+	%y = 3.5;
+	%cur = %this.navMap.extendTo(%x SPC %y, %cur);
+	
+	%cur = %this.navMap.extendTo($testX SPC $testY, %root);
+	
+	%this.navMap.draw();
 }

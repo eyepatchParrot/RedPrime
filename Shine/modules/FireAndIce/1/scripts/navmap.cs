@@ -129,6 +129,9 @@ function NavMap::draw(%this)
 	if (!isObject(%this.drawObjs)) {
 		%this.drawObjs = new SimSet();
 	} else {
+		for (%i = 0; %i < %this.drawObjs.getCount(); %i++) {
+			mainScene.remove(%this.drawObjs.getObject(%i));
+		}
 		%this.drawObjs.deleteObjects();
 	}
 	%quads = %this.getQuads();
