@@ -148,23 +148,23 @@ function PlayerCharacter::isDead( %this )
 
 function PlayerCharacter::die( %this )
 {
-	%deathAnimation = new Sprite();
-	%deathAnimation.setLifetime(2.0);
-	%deathAnimation.setPosition( %this.getPosition() );
-	%deathAnimation.setSize( 1 SPC 1.2 );
-	%deathAnimation.setImage( "FireAndIce:redDead" );
-	%deathAnimation.setBodyType( static );
-	%deathAnimation.setCollisionSuppress( true );
-	%deathAnimation.setSceneLayer( 3 );
-	mainScene.add( %deathAnimation );
-	%this.schedule(32, "safeDelete" );
-	if (SpawnManager.waveNum < $Game::MinWinWave)
-	{
-		FireAndIce.schedule(2000, "startLoseMenu");
-	}
-	else
-	{
-		FireAndIce.schedule(2000, "startWinMenu");
-	}
-	alxPlay("FireAndIce:redDieSound");
+	// %deathAnimation = new Sprite();
+	// %deathAnimation.setLifetime(2.0);
+	// %deathAnimation.setPosition( %this.getPosition() );
+	// %deathAnimation.setSize( 1 SPC 1.2 );
+	// %deathAnimation.setImage( "FireAndIce:redDead" );
+	// %deathAnimation.setBodyType( static );
+	// %deathAnimation.setCollisionSuppress( true );
+	// %deathAnimation.setSceneLayer( 3 );
+	// mainScene.add( %deathAnimation );
+	// %this.schedule(32, "safeDelete" );
+	// if (SpawnManager.waveNum < $Game::MinWinWave)
+	// {
+		// FireAndIce.schedule(2000, "startLoseMenu");
+	// }
+	// else
+	// {
+		// FireAndIce.schedule(2000, "startWinMenu");
+	// }
+	// alxPlay("FireAndIce:redDieSound");
 }
