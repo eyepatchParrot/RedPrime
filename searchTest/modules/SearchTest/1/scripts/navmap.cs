@@ -100,27 +100,56 @@ function NavMap::isVisibleFrom(%this, %a, %b) {
 }
 
 function NavMap::lineConnects(%this, %a, %b) {
+	echo("** a" SPC %a.pos SPC "b" SPC %b.pos SPC "**");
+
 	%q = %this.getAdjQuad(%a);
 	%endQ = %this.getAdjQuad(%b);
 	%line = newLine(%a.pos, %b.pos);
 	while (!%q.containsNode(%b)) {
 		%intersect = %this.getQuadIntersect(%q, %pQ, %line);
+		if (isObject(%intersect)) {
+			echo("* intersect" SPC %intersect.nw.pos SPC "*");
+		} else {
+			echo("doesn't intersect");
+		}
 		if (!isObject(%intersect)) return false;
 		%pQ = %q;
 		%q = %intersect;
 	}
+	echo("connects");
+	return true;
 }
 
 function NavMap::getQuadIntersect(%this, %q, %pQ, %line)
 {
-	%wLine = newLine(%q.nw, %q.sw);
-	%nLine = newLine(%q.nw, %q.ne);
-	%eLine = newLine(%q.ne, %q.se);
-	%sLine = newLine(%q.sw, %q.se);
-	if (%q.w != %pQ && %line.intersects(%wLine)) return %q.w;
-	if (%q.n != %pQ && %line.intersects(%nLine)) return %q.n;
-	if (%q.e != %pQ && %line.intersects(%eLine)) return %q.e;
-	if (%q.s != %pQ && %line.intersects(%sLine)) return %q.s;
+	%wLine = newLine(%q.nw.pos, %q.sw.pos);
+	%nLine = newLine(%q.nw.pos, %q.ne.pos);
+	%eLine = newLine(%q.ne.pos, %q.se.pos);
+	%sLine = newLine(%q.sw.pos, %q.se.pos);
+	
+	echo("isObj(pQ)" SPC isObject(%pQ));
+	
+	echo("check w intersect");
+	%wIntersect = %line.intersects(%wLine);
+	echo("q.w" SPC (%q.w.nw.pos) SPC "pQ" SPC %pQ.nw.pos);
+	echo("q.w != pQ" SPC (%q.w != %pQ) SPC "lineIntersect" SPC %wIntersect);
+	if (%q.w != %pQ && %wIntersect) return %q.w;
+	
+	echo("check n intersect");
+	%nIntersect = %line.intersects(%nLine);
+	echo("q.n != pQ" SPC (%q.n != %pQ) SPC "lineIntersect" SPC %nIntersect);
+	if (%q.n != %pQ && %nIntersect) return %q.n;
+	
+	echo("check e intersect");
+	%eIntersect = %line.intersects(%eLine);
+	echo("q.e != pQ" SPC (%q.e != %pQ) SPC "lineIntersect" SPC %eIntersect);
+	if (%q.e != %pQ && %eIntersect) return %q.e;
+	
+	echo("check s intersect");
+	%sIntersect = %line.intersects(%sLine);
+	%qSeQ = %q.s != %pQ;
+	echo("q.s != pQ" SPC %qSeQ SPC "lineIntersect" SPC %sIntersect);
+	if (%qSeQ && %sIntersect) return %q.s;
 }
 
 function newLine(%a, %b)
@@ -148,14 +177,19 @@ function NavLine::intersects(%this, %b)
 	%B_2 = %b.B;
 	%C_2 = %b.C;
 	%det = %A_1 * %B_2 - %A_2 * %B_1;
+	// echo("det" SPC %det);
 	if (mAbs(%det) < 0.1) return false;
 	%x = (%B_2 * %C_1 - %B_1 * %C_2) / %det;
 	%y = (%A_1 * %C_2 - %A_2 * %C_1) / %det;
 	
-	%minX = mGetMax(%this.getMinX(), %b.getMinX());
-	%minY = mGetMax(%this.getMinY(), %b.getMinY());
-	%maxX = mGetMin(%this.getMaxY(), %b.getMaxY());
-	%maxY = mGetMin(%this.getMaxY(), %b.getMaxY());
+	// worked in some leeway because floats
+	%minX = mGetMax(%this.getMinX(), %b.getMinX()) - 0.1;
+	%minY = mGetMax(%this.getMinY(), %b.getMinY()) - 0.1;
+	%maxX = mGetMin(%this.getMaxX(), %b.getMaxX()) + 0.1;
+	%maxY = mGetMin(%this.getMaxY(), %b.getMaxY()) + 0.1;
+	echo("aMinX" SPC %this.getMinX() SPC "aMaxX" SPC %this.getMaxX() SPC "aMinY" SPC %this.getMinY() SPC "aMaxY" SPC %this.getMaxY());
+	echo("bMinX" SPC %b.getMinX() SPC "bMaxX" SPC %b.getMaxX() SPC "bMinY" SPC %b.getMinY() SPC "bMaxY" SPC %b.getMaxY());
+	echo("x" SPC %x SPC "y" SPC %y SPC "minX" SPC %minX SPC "minY" SPC %minY SPC "maxX" SPC %maxX SPC "maxY" SPC %maxY);
 	return %x >= %minX && %x <= %maxX && %y >= %minY && %y <= %maxY;
 }
 
@@ -184,7 +218,7 @@ function NavLine::getMaxY(%this)
 function NavMap::extendTo(%this, %pos, %prevQuad)
 {
 	if (isObject(%prevQuad)) {
-		echo("Attempt extension");
+		// echo("Attempt extension");
 		if (%prevQuad.posIsEast(%pos)) {
 			%x = getWord(%pos, 0);
 			%yN = getWord(%prevQuad.ne.pos, 1);
@@ -193,7 +227,8 @@ function NavMap::extendTo(%this, %pos, %prevQuad)
 			%nNE = newNode(%x SPC %yN);
 			%nSW = %prevQuad.se;
 			%nSE = newNode(%x SPC %yS);
-			%q = newNavQuad(%nNW, %nNE, %nSW, %nSE); 
+			%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+			%q.w = %prevQuad;
 			%prevQuad.e = %q;
 			$selectedQuad = %q;
 		} else if (%prevQuad.posIsWest(%pos)) {
@@ -205,6 +240,7 @@ function NavMap::extendTo(%this, %pos, %prevQuad)
 			%nSW = newNode(%x SPC %yS);
 			%nSE = %prevQuad.sw;
 			%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+			%q.e = %prevQuad;
 			%prevQuad.w = %q;
 			$selectedQuad = %q;
 		} else if (%prevQuad.posIsNorth(%pos)) {
@@ -216,6 +252,7 @@ function NavMap::extendTo(%this, %pos, %prevQuad)
 			%nSW = %prevQuad.nw;
 			%nSE = %prevQuad.ne;
 			%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+			%q.s = %prevQuad;
 			%prevQuad.n = %q;
 			$selectedQuad = %q;
 		} else if (%prevQuad.posIsSouth(%pos)) {
@@ -227,10 +264,11 @@ function NavMap::extendTo(%this, %pos, %prevQuad)
 			%nSW = newNode(%xW SPC %y);
 			%nSE = newNode(%xE SPC %y);
 			%q = newNavQuad(%nNW, %nNE, %nSW, %nSE);
+			%q.n = %prevQuad;
 			%prevQuad.s = %q;
 			$selectedQuad = %q;
 		} else {
-			echo("not in valid area");
+			// echo("not in valid area");
 		}
 	}
 }
@@ -297,10 +335,8 @@ function NavMap::getQuads(%this)
 function NavMap::draw(%this)
 {
 	if (!isObject(%this.drawObjs)) {
-		echo("new simset");
 		%this.drawObjs = new SimSet();
 	} else {
-		echo("old simset");
 		%this.drawObjs.deleteObjects();
 	}
 	%quads = %this.getQuads();
@@ -324,22 +360,18 @@ function NavMap::draw(%this)
 		mainScene.add(%obj);
 		%this.drawObjs.add(%obj);
 		
-		echo("draw ne");
 		%oNE = newCircle(%q.ne.pos);
 		mainScene.add(%oNE);
 		%this.drawObjs.add(%oNE);
-		
-		echo("draw se");
+	
 		%oSE = newCircle(%q.se.pos);
 		mainScene.add(%oSE);
 		%this.drawObjs.add(%oSE);
 		
-		echo("draw nw");
 		%oNW = newCircle(%q.nw.pos);
 		mainScene.add(%oNW);
 		%this.drawObjs.add(%oNW);
 		
-		echo("draw sw");
 		%oSW = newCircle(%q.sw.pos);
 		mainScene.add(%oSW);
 		%this.drawObjs.add(%oSW);
@@ -398,27 +430,21 @@ function NavQuad::distTo(%this, %pos)
 
 function NavQuad::posIsWest(%this, %pos)
 {
-	echo("posIsWest");
 	%x = getWord(%pos, 0);
 	%y = getWord(%pos, 1);
 	%yN = getWord(%this.nw.pos, 1);
 	%yS = getWord(%this.sw.pos, 1);
 	%pX = projectX(%y, %this.nw.pos, %this.sw.pos);
-	echo("isBetween" SPC %y SPC %yN SPC %yS SPC isBetween(%y, %yN, %yS));
-	echo("projectX" SPC %x SPC %pX SPC %x > %pX);
 	return isBetween(%y, %yN, %yS) && %x < %pX;
 }
 
 function NavQuad::posIsEast(%this, %pos)
 {
-	echo("posIsEast");
 	%x = getWord(%pos, 0);
 	%y = getWord(%pos, 1);
 	%yN = getWord(%this.ne.pos, 1);
 	%yS = getWord(%this.se.pos, 1);
 	%pX = projectX(%y, %this.ne.pos, %this.se.pos);
-	echo("isBetween" SPC %y SPC %yN SPC %yS SPC isBetween(%y, %yN, %yS));
-	echo("projectX" SPC %x SPC %pX SPC %x > %pX);
 	return isBetween(%y, %yN, %yS) && %x > %pX;
 }
 

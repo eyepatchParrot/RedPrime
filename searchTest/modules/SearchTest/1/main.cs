@@ -254,6 +254,10 @@ function SearchTest::calculatePath(%this)
 	%openNodes.add(%startNode);
 	%startNode.G = 0;
 	%startNode.F = %startNode.G + getH(%startNode, %endNode);
+
+	// echo("*** look for neighbors ***");
+	// %neighbors = %this.getNeighbors(%startNode, %endNode);
+	// echo("numNeighbors" SPC %neighbors.getCount());
 	
 	while (%openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode)) {
 		echo("numOpenNodes :" SPC %openNodes.getCount());
@@ -276,14 +280,14 @@ function SearchTest::calculatePath(%this)
 			if (!%openNodes.isMember(%neighbor) && !%closedNodes.isMember(%neighbor)) {
 				%neighbor.G = %g;
 				%neighbor.F = %neighbor.G + getH(%neighbor, %endNode);
-				echo("neighbor" SPC %neighbor.pos SPC "g" SPC %g SPC "f" SPC %neighbor.F);
+				// echo("neighbor" SPC %neighbor.pos SPC "g" SPC %g SPC "f" SPC %neighbor.F);
 				%neighbor.parent = %n;
 				%openNodes.add(%neighbor);
 			}
 		}
 	}
 	
-	echo("num open nodes :" SPC %openNodes.getCount() SPC "end node is member :" SPC %closedNodes.isMember(%endNode));
+	// echo("num open nodes :" SPC %openNodes.getCount() SPC "end node is member :" SPC %closedNodes.isMember(%endNode));
 	
 	%nodePath = new SimSet();
 	%n = %endNode;
@@ -302,7 +306,10 @@ function SearchTest::calculatePath(%this)
 function SearchTest::getNeighbors(%this, %from, %endNode)
 {
 	%neighbors = %this.map.getNeighbors(%from);
-	if (%this.map.isVisibleFrom(%from, %endNode)) %neighbors.add(%endNode);
+	echo("check endNode visibility");
+	%isVisible = %this.map.isVisibleFrom(%from, %endNode);
+	echo("endNode is visible" SPC %isVisible);
+	if (%isVisible) %neighbors.add(%endNode);
 	
 	return %neighbors;
 }	
@@ -320,7 +327,7 @@ function SearchTest::drawNodePath(%this, %nodePath)
 		}
 		%dist = distTo(%a.pos, %b.pos);
 		%angle = mDegToRad(Vector2AngleToPoint(%a.pos, %b.pos) - 90.0);
-		echo("dist :" SPC %dist SPC "angle :" SPC %angle);
+		// echo("dist :" SPC %dist SPC "angle :" SPC %angle);
 		for (%i = 1; %i * %i < %dist; %i++) {
 			%objPos = projectPos(%a.pos, %angle, %i);
 			%obj = newCircle(%objPos);
