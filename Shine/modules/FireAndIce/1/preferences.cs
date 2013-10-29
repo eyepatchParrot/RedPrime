@@ -14,5 +14,5 @@ $Game::ZoneSize = 3;
 $Game::soundOn = false;
 $Game::MinWinWave = 5;
 $Game::Kills = 0;
-$testX = -16;
-$testY = 0;
+$testX = 32;
+$testY = 18;

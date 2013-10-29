@@ -208,7 +208,6 @@ function NavQuad::posIsEast(%this, %pos)
 	%yN = getWord(%this.ne.pos, 1);
 	%yS = getWord(%this.se.pos, 1);
 	%pX = projectX(%y, %this.ne.pos, %this.se.pos);
-	echo("y" SPC %y SPC "yN" SPC %yN SPC "yS" SPC %yS SPC "x" SPC %x SPC "pX" SPC %pX);
 	return isBetween(%y, %yN, %yS) && %x > %pX;
 }
 

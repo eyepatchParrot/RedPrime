@@ -4,6 +4,7 @@
 // NavMap::isEmpty(%this) %isEmpty
 // NavMap::initAt(%this, %pNW, %pNE, %pSW, %pSE) %rootQuad
 // NavMap::extendTo(%this, %pos, %quad) %newQuad
+// NavMap::connect(%this, %aQuad, %bQuad) %newQuad
 // NavMap::getQuadAt(%this, %pos) %quad
 // NavMap::getAllQuadsAt(%this, %pos) %quads
 // NavMap::getNeighbors(%this, %pos) %neighbors
@@ -52,7 +53,29 @@ function NavMap::extendTo(%this, %pos, %prevQuad)
 	} else {
 		echo("%pos not within %prevQuad");
 	}
+	
+	%qNWY = getWord(%q.nw.pos, 1);
+	%qNEY = getWord(%q.ne.pos, 1);
+	%qSWY = getWord(%q.sw.pos, 1);
+	%qSEY = getWord(%q.se.pos, 1);
 
+	return %q;
+}
+
+function NavMap::connect(%this, %aQuad, %bQuad)
+{
+	%pos = %bQuad.getCenterX() SPC %bQuad.getCenterY();
+	if (%aQuad.posIsNorth(%pos)) {
+		%q = %aQuad.connectNorthTo(%bQuad);
+	} else if (%aQuad.posIsEast(%pos)) {
+		%q = %aQuad.connectEastTo(%bQuad);
+	} else if (%aQuad.posIsSouth(%pos)) {
+		%q = %aQuad.connectSouthTo(%bQuad);
+	} else if (%aQuad.posIsWest(%pos)) {
+		%q = %aQuad.connectWestTo(%bQuad);
+	} else {
+		echo("can't connect");
+	}
 	return %q;
 }
 
@@ -170,7 +193,42 @@ function NavMap::draw(%this)
 		%oSW = newCircle(%q.sw.pos);
 		mainScene.add(%oSW);
 		%this.drawObjs.add(%oSW);
+		
+		if (isObject(%q.n)) {
+			%oN = newConnectCircle(%qX SPC (%qY + %qH / 4));
+			mainScene.add(%oN);
+			%this.drawObjs.add(%oN);
+		}
+		
+		if (isObject(%q.e)) {
+			%oE = newConnectCircle((%qX + %qW / 4) SPC %qY);
+			mainScene.add(%oE);
+			%this.drawObjs.add(%oE);
+		}
+		
+		if (isObject(%q.s)) {
+			%oS = newConnectCircle(%qX SPC (%qY - %qH / 4));
+			mainScene.add(%oS);
+			%this.drawObjs.add(%oS);
+		}
+		
+		if (isObject(%q.w)) {
+			%oW = newConnectCircle((%qX - %qW / 4) SPC %qY);
+			mainScene.add(%oW);
+			%this.drawObs.add(%oW);
+		}
 	}
+}
+
+function newConnectCircle(%pos)
+{
+	%obj = newCircle(%pos);
+	%obj.setIsCircle(false);
+	%obj.setPolyPrimitive(3);
+	%obj.setFillMode(true);
+	%obj.setSize(0.25);
+	%obj.setFillColor("1 1 0 1");
+	return %obj;
 }
 
 // ** private **

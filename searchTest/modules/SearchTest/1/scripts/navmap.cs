@@ -61,7 +61,6 @@ function NavMap::connect(%this, %aQuad, %bQuad)
 {
 	%pos = %bQuad.getCenterX() SPC %bQuad.getCenterY();
 	if (%aQuad.posIsNorth(%pos)) {
-		echo("connect n");
 		%q = %aQuad.connectNorthTo(%bQuad);
 	} else if (%aQuad.posIsEast(%pos)) {
 		%q = %aQuad.connectEastTo(%bQuad);
