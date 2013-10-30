@@ -22,9 +22,9 @@ function createSpawnZones()
 	%spawnManager = new SceneObject(SpawnManager);
 	%spawnManager.zones = new SimSet();
 	%spawnManager.addSpawnZone( createSpawnZone( "top", %topZonePosition, %topZoneSize ) );
-	// %spawnManager.addSpawnZone( createSpawnZone( "bottom", %bottomZonePosition, %bottomZoneSize ) );
-	// %spawnManager.addSpawnZone( createSpawnZone( "right", %rightZonePosition, %rightZoneSize ) );
-	// %spawnManager.addSpawnZone( createSpawnZone( "left", %leftZonePosition, %leftZoneSize ) );
+	%spawnManager.addSpawnZone( createSpawnZone( "bottom", %bottomZonePosition, %bottomZoneSize ) );
+	%spawnManager.addSpawnZone( createSpawnZone( "right", %rightZonePosition, %rightZoneSize ) );
+	%spawnManager.addSpawnZone( createSpawnZone( "left", %leftZonePosition, %leftZoneSize ) );
 	%spawnManager.waveNum = 0;
 	%spawnManager.spawnNextWave();
 }
@@ -45,12 +45,12 @@ function SpawnManager::spawnNextWave(%this)
 	%baseSpawnTime = 1000;
 	%difficultyInc = 0.1;
 	%difficultyMul = 1 + %difficultyInc * (%this.waveNum - 1);
-	// %numEnemies = %baseNumEnemies * %difficultyMul;
+	%numEnemies = %baseNumEnemies * %difficultyMul;
 	%numEnemies = 1;
 	%spawnTime = %baseSpawnTime / %difficultyMul;
 	%waveTime = %numEnemies * %spawnTime + 8000;
 	%this.spawnNewWaveAtAllZones( %numEnemies, %spawnTime);
-	// %this.waveSpawn = %this.schedule( %waveTime, spawnNextWave );
+	%this.waveSpawn = %this.schedule( %waveTime, spawnNextWave );
 }
 
 function SpawnManager::spawnNewWaveAtAllZones( %this, %numEnemies, %freq )
