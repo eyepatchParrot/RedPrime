@@ -117,12 +117,12 @@ function FireAndIce::startGame( %this )
     // Note that a viewport comes with a camera built-in.
     mainWindow.setScene(mainScene);
     mainWindow.setCameraPosition( 0, 0 );
-    mainWindow.setCameraSize( $Game::ScreenWidth * 2, $Game::ScreenHeight * 2 );
+    mainWindow.setCameraSize( $Game::ScreenWidth, $Game::ScreenHeight );
 	%viewRight = $Game::ArenaWidth / 2.0;
 	%viewLeft = -%viewRight;
 	%viewTop = $Game::ArenaHeight / 2.0;
 	%viewLow = -%viewTop;
-	// mainWindow.setViewLimitOn( %viewLeft SPC %viewLow SPC %viewRight SPC %viewTop );
+	mainWindow.setViewLimitOn( %viewLeft SPC %viewLow SPC %viewRight SPC %viewTop );
 
 	mainScene.clear();
 	mainScene.setScenePause( false );
