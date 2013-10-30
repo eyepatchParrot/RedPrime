@@ -116,6 +116,7 @@ function NavMap::getNeighbors(%this, %node)
 	%neighbors = new SimSet();
 	%adjQuads = %this.getAllQuadsAt(%node);
 	
+	// %visibleQuads = %adjQuads;
 	%visibleQuads = %this.getVisibleQuads(%node, %adjQuads.getObject(0), %adjQuads);
 	for (%i = 0; %i < %visibleQuads.getCount(); %i++) {
 		%q = %visibleQuads.getObject(%i);
@@ -215,7 +216,7 @@ function NavMap::draw(%this)
 		if (isObject(%q.w)) {
 			%oW = newConnectCircle((%qX - %qW / 4) SPC %qY);
 			mainScene.add(%oW);
-			%this.drawObs.add(%oW);
+			%this.drawObjs.add(%oW);
 		}
 	}
 }

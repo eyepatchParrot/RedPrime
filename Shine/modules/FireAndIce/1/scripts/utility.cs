@@ -1,3 +1,36 @@
+function drawNodePath(%nodePath)
+{
+	%drawObjs = new SimSet();
+	
+	for (%nodeIdx = 0; %nodeIdx + 1 < %nodePath.getCount(); %nodeIdx++) {
+		%a = %nodePath.getObject(%nodeIdx);
+		%b = %nodePath.getObject(%nodeIdx + 1);
+		
+		if (%nodeIdx != 0) {
+			%obj = newCircle(%a.pos);
+			%obj.setFillMode(true);
+			%obj.setSize(0.5);
+			%drawObjs.add(%obj);
+			mainScene.add(%obj);
+		}
+		%obj = newCircle(%b.pos);
+			%obj.setFillMode(true);
+			%obj.setSize(0.5);
+			%drawObjs.add(%obj);
+			mainScene.add(%obj);
+		%distSq = distToSq(%a.pos, %b.pos);
+		%angle = mDegToRad(Vector2AngleToPoint(%a.pos, %b.pos) - 90.0);
+		for (%i = 1; %i * %i < %distSq; %i++) {
+			%objPos = projectPos(%a.pos, %angle, %i);
+			%obj = newCircle(%objPos);
+			%obj.setSize(0.25);
+			mainScene.add(%obj);
+			%drawObjs.add(%obj);
+		}
+	}
+	return %drawObjs;
+}
+
 function newCircle(%pos)
 {
 	%obj = new ShapeVector();

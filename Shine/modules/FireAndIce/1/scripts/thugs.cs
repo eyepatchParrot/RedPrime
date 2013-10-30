@@ -21,7 +21,13 @@ function createThug(%position)
 	%moveAi.targetObject = PlayerCharacter;
 	%moveAi.startPosition = %position;
 	%moveAi.moveSpeed = 2.0;
-	%s.addBehavior(%moveAi);
+	// %s.addBehavior(%moveAi);
+	
+	%aStar = AStarBehavior.createInstance();
+	%aStar.targetObj = PlayerCharacter;
+	echo("fire.navMap" SPC isObject(FireAndIce.navMap));
+	%aStar.navMap = FireAndIce.navMap;
+	%s.addBehavior(%aStar);
 	
 	%dropPickup = DropPickupBehavior.createInstance();
 	%dropPickup.pickupClass = "weaponBoost";
