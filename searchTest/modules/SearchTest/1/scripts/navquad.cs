@@ -92,6 +92,12 @@ function newNavQuadSouthOf(%prevQuad, %pos)
 
 function NavQuad::connectNorthTo(%this, %bQ)
 {
+	if (%this.nw.pos $= %bQ.sw.pos) {
+		%this.nw = %bQ.sw;
+	}
+	if (%this.ne.pos $= %bQ.se.pos) {
+		%this.ne = %bQ.se;
+	}
 	if (%this.nw == %bQ.sw && %this.ne == %bQ.se) {
 		%this.n = %bQ;
 		%bQ.s = %this;
@@ -109,6 +115,12 @@ function NavQuad::connectNorthTo(%this, %bQ)
 
 function NavQuad::connectEastTo(%this, %bQ)
 {
+	if (%this.ne.pos $= %bQ.nw.pos) {
+		%this.ne = %bQ.nw;
+	}
+	if (%this.se.pos $= %bQ.sw.pos) {
+		%this.se = %bQ.sw;
+	}
 	if (%this.ne == %bQ.nw && %this.se == %bQ.sw) {
 		%this.e = %bQ;
 		%bQ.w = %this;
@@ -125,6 +137,12 @@ function NavQuad::connectEastTo(%this, %bQ)
 
 function NavQuad::connectSouthTo(%this, %bQ)
 {
+	if (%this.sw.pos $= %bQ.nw.pos && %this.sw != %bQ.nw) {
+		%this.sw = %bQ.nw;
+	}
+	if (%this.se.pos $= %bQ.ne.pos && %this.se != %bQ.ne) {
+		%this.se = %bQ.ne;
+	}
 	if (%this.sw == %bQ.nw && %this.se == %bQ.ne) {
 		%this.s = %bQ;
 		%bQ.n = %this;
@@ -134,12 +152,19 @@ function NavQuad::connectSouthTo(%this, %bQ)
 	%q = newNavQuad(%this.sw, %this.se, %bQ.nw, %bQ.ne);
 	%this.s = %q;
 	%q.s = %bQ;
-	%bQ.n = q;
+	%bQ.n = %q;
 	%q.n = %this;
+	return %q;
 }
 
 function NavQuad::connectWestTo(%this, %bQ)
 {
+	if (%this.nw.pos $= %bQ.ne.pos) {
+		%this.nw = %bQ.ne;
+	}
+	if (%this.sw.pos $= %bQ.se.pos) {
+		%this.sw = %bQ.se;
+	}
 	if (%this.nw == %bQ.ne && %this.sw == %bQ.se) {
 		%this.w = %bQ;
 		%bQ.e = %this;
@@ -149,8 +174,9 @@ function NavQuad::connectWestTo(%this, %bQ)
 	%q = newNavQuad(%bQ.ne, %this.nw, %bQ.se, %this.sw);
 	%this.w = %q;
 	%q.w = %bQ;
-	%bQ.e = q;
+	%bQ.e = %q;
 	%q.e = %this;
+	return %q;
 }
 
 // ** TODO: Make work for all quadrilaterals rather than just rectangles

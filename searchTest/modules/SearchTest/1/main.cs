@@ -243,78 +243,81 @@ function SearchTest::calculatePath(%this)
 		return;
 	}
 	
-	if (!isObject(%this.drawObjs)) {
-		%this.drawObjs = new SimSet();
-	} else {
-		%this.drawObjs.deleteObjects();
-	}
-	
 	%startNode = newNode(%this.startNode.getPosition());
-	%endNode = newNode(%this.endNode.getPosition());
-	%closedNodes = new SimSet();
-	%openNodes = new SimSet();
+	%endNode = newNode(%this.endNode.getPosition());	
+	%sT = getRealTime();
+	for (%i = 0; getRealTime() - %sT < 1000; %i++) {
+		%this.getNeighbors(%startNode, %endNode);
+	}
+	%dT = getRealTime() - %sT;
+	%aT = %dT / %i;
+	echo("average" SPC %aT SPC "total" SPC %dT);
 	
-	echo("angle: " SPC Vector2AngleToPoint(%startNode.pos, %endNode.pos));
 	
-	// F = G + H
-	%openNodes.add(%startNode);
-	%startNode.G = 0;
-	%startNode.F = %startNode.G + getH(%startNode, %endNode);
-
-	// echo("*** look for neighbors ***");
-	// %neighbors = %this.getNeighbors(%startNode, %endNode);
-	// echo("numNeighbors" SPC %neighbors.getCount());
 	
-	while (%openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode)) {
-		echo("numOpenNodes :" SPC %openNodes.getCount());
-		%n = findCheapestNode(%openNodes);
-		echo("n" SPC %n.pos);
-		%closedNodes.add(%n);
-		%openNodes.remove(%n);
+	// if (!isObject(%this.drawObjs)) {
+		// %this.drawObjs = new SimSet();
+	// } else {
+		// %this.drawObjs.deleteObjects();
+	// }
+	
+	// %startNode = newNode(%this.startNode.getPosition());
+	// %endNode = newNode(%this.endNode.getPosition());
+	// %closedNodes = new SimSet();
+	// %openNodes = new SimSet();
+	
+	// // F = G + H
+	// %openNodes.add(%startNode);
+	// %startNode.G = 0;
+	// %startNode.F = %startNode.G + getH(%startNode, %endNode);
+	
+	// %startTime = getRealTime();
+	// while (%openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode)) {
+		// %n = findCheapestNode(%openNodes);
+		// %closedNodes.add(%n);
+		// %openNodes.remove(%n);
 		
-		%neighbors = %this.getNeighbors(%n, %endNode);
-		echo("numNeighbors :" SPC %neighbors.getCount());
-		for (%i = 0; %i < %neighbors.getCount(); %i++) {
-			%neighbor = %neighbors.getObject(%i);
-			%g = %n.G + distTo(%n, %neighbor);
-			if (%openNodes.isMember(%neighbor) && %g < %neighbor.G) {
-				%openNodes.remove(%neighbor);
-			}
-			if (%closedNodes.isMember(%neighbor) && %g < %neighbor.G) {
-				%closedNodes.remove(%neighbor);
-			}
-			if (!%openNodes.isMember(%neighbor) && !%closedNodes.isMember(%neighbor)) {
-				%neighbor.G = %g;
-				%neighbor.F = %neighbor.G + getH(%neighbor, %endNode);
-				// echo("neighbor" SPC %neighbor.pos SPC "g" SPC %g SPC "f" SPC %neighbor.F);
-				%neighbor.parent = %n;
-				%openNodes.add(%neighbor);
-			}
-		}
-	}
+		// %sT = getRealTime();
+		// %neighbors = %this.getNeighbors(%n, %endNode);
+		// %neighborTime += getRealTime() - %sT;
+		// for (%i = 0; %i < %neighbors.getCount(); %i++) {
+			// %neighbor = %neighbors.getObject(%i);
+			// %g = %n.G + distTo(%n, %neighbor);
+			// if (%openNodes.isMember(%neighbor) && %g < %neighbor.G) {
+				// %openNodes.remove(%neighbor);
+			// }
+			// if (%closedNodes.isMember(%neighbor) && %g < %neighbor.G) {
+				// %closedNodes.remove(%neighbor);
+			// }
+			// if (!%openNodes.isMember(%neighbor) && !%closedNodes.isMember(%neighbor)) {
+				// %neighbor.G = %g;
+				// %neighbor.F = %neighbor.G + getH(%neighbor, %endNode);
+				// %neighbor.parent = %n;
+				// %openNodes.add(%neighbor);
+			// }
+		// }
+	// }
+	// %totalTime = getRealTime() - %startTime;
+	// %neighborPerc = %neighborTime / %totalTime * 100.0;
+	// echo("neighborTime" SPC %neighborTime SPC %neighborPerc @ "%" SPC "totalTime" SPC %totalTime);
+		
+	// %nodePath = new SimSet();
+	// %n = %endNode;
+	// %nodePath.add(%n);
+	// while (isObject(%n.parent)) {
+		// %nodePath.add(%n.parent);
+		// %n = %n.parent;
+	// }
 	
-	// echo("num open nodes :" SPC %openNodes.getCount() SPC "end node is member :" SPC %closedNodes.isMember(%endNode));
+	// reverseSimSet(%nodePath);
 	
-	%nodePath = new SimSet();
-	%n = %endNode;
-	%nodePath.add(%n);
-	while (isObject(%n.parent)) {
-		echo("add node" SPC %n.pos);
-		%nodePath.add(%n.parent);
-		%n = %n.parent;
-	}
-	
-	reverseSimSet(%nodePath);
-	
-	%this.drawNodePath(%nodePath);
+	// %this.drawNodePath(%nodePath);
 }
 
 function SearchTest::getNeighbors(%this, %from, %endNode)
 {
 	%neighbors = %this.map.getNeighbors(%from);
-	echo("check endNode visibility");
 	%isVisible = %this.map.lineConnects(%from, %endNode);
-	echo("endNode is visible" SPC %isVisible);
 	if (%isVisible) %neighbors.add(%endNode);
 	
 	return %neighbors;
