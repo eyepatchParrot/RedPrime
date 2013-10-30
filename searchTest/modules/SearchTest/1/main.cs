@@ -67,6 +67,20 @@ function SearchTest::create( %this )
     %this.sayHello();
 	
 	%this.updateMode();
+	
+	%this.addRect(0 SPC 20);
+	%this.addRect(0 SPC -3);
+	%this.addRect(-25 SPC 0);
+	%this.addRect(-20 SPC -17);
+	%this.addRect(-20 SPC -27);
+	$selectedQuad = %this.map.rootQuad.s;
+	%this.addRect(27 SPC 7);
+	%this.addRect(20 SPC -16);
+	%this.addRect(20 SPC -27);
+	%this.addRect(-15 SPC 5);
+	%this.addRect(-15 SPC -5);
+	%this.addRect(-15 SPC -15);
+	// %this.add
 }
 
 //-----------------------------------------------------------------------------
@@ -190,6 +204,8 @@ function SearchTest::setEndNode(%this, %pos)
 
 function SearchTest::addRect(%this, %pos)
 {
+	echo("addRect" SPC %pos);
+	
 	if (!isObject(%this.map)) {
 		%this.map = newMap();
 	}
@@ -243,79 +259,84 @@ function SearchTest::calculatePath(%this)
 		return;
 	}
 	
-	%startNode = newNode(%this.startNode.getPosition());
-	%endNode = newNode(%this.endNode.getPosition());	
-	%sT = getRealTime();
-	for (%i = 0; getRealTime() - %sT < 1000; %i++) {
-		%this.getNeighbors(%startNode, %endNode);
-	}
-	%dT = getRealTime() - %sT;
-	%aT = %dT / %i;
-	echo("average" SPC %aT SPC "total" SPC %dT);
-	
-	
-	
-	// if (!isObject(%this.drawObjs)) {
-		// %this.drawObjs = new SimSet();
-	// } else {
-		// %this.drawObjs.deleteObjects();
-	// }
-	
 	// %startNode = newNode(%this.startNode.getPosition());
-	// %endNode = newNode(%this.endNode.getPosition());
-	// %closedNodes = new SimSet();
-	// %openNodes = new SimSet();
-	
-	// // F = G + H
-	// %openNodes.add(%startNode);
-	// %startNode.G = 0;
-	// %startNode.F = %startNode.G + getH(%startNode, %endNode);
-	
-	// %startTime = getRealTime();
-	// while (%openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode)) {
-		// %n = findCheapestNode(%openNodes);
-		// %closedNodes.add(%n);
-		// %openNodes.remove(%n);
-		
-		// %sT = getRealTime();
-		// %neighbors = %this.getNeighbors(%n, %endNode);
-		// %neighborTime += getRealTime() - %sT;
-		// for (%i = 0; %i < %neighbors.getCount(); %i++) {
-			// %neighbor = %neighbors.getObject(%i);
-			// %g = %n.G + distTo(%n, %neighbor);
-			// if (%openNodes.isMember(%neighbor) && %g < %neighbor.G) {
-				// %openNodes.remove(%neighbor);
-			// }
-			// if (%closedNodes.isMember(%neighbor) && %g < %neighbor.G) {
-				// %closedNodes.remove(%neighbor);
-			// }
-			// if (!%openNodes.isMember(%neighbor) && !%closedNodes.isMember(%neighbor)) {
-				// %neighbor.G = %g;
-				// %neighbor.F = %neighbor.G + getH(%neighbor, %endNode);
-				// %neighbor.parent = %n;
-				// %openNodes.add(%neighbor);
-			// }
-		// }
+	// %endNode = newNode(%this.endNode.getPosition());	
+	// %sT = getRealTime();
+	// for (%i = 0; getRealTime() - %sT < 1000; %i++) {
+		// %this.getNeighbors(%startNode, %endNode);
 	// }
-	// %totalTime = getRealTime() - %startTime;
-	// %neighborPerc = %neighborTime / %totalTime * 100.0;
-	// echo("neighborTime" SPC %neighborTime SPC %neighborPerc @ "%" SPC "totalTime" SPC %totalTime);
+	// %dT = getRealTime() - %sT;
+	// %aT = %dT / %i;
+	// echo("average" SPC %aT SPC "total" SPC %dT);
+	
+	if (!isObject(%this.drawObjs)) {
+		%this.drawObjs = new SimSet();
+	} else {
+		%this.drawObjs.deleteObjects();
+	}
+	
+	%startNode = newNode(%this.startNode.getPosition());
+	%endNode = newNode(%this.endNode.getPosition());
+	%closedNodes = new SimSet();
+	%openNodes = new SimSet();
+	
+	// F = G + H
+	%openNodes.add(%startNode);
+	%startNode.G = 0;
+	%startNode.F = %startNode.G + getH(%startNode, %endNode);
+	
+	%startTime = getRealTime();
+	%neighborTime = 0;
+	while (%openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode)) {
+		%n = findCheapestNode(%openNodes);
+		%closedNodes.add(%n);
+		%openNodes.remove(%n);
 		
-	// %nodePath = new SimSet();
-	// %n = %endNode;
-	// %nodePath.add(%n);
-	// while (isObject(%n.parent)) {
-		// %nodePath.add(%n.parent);
-		// %n = %n.parent;
-	// }
+		%sT = getRealTime();
+		%neighbors = %this.getNeighbors(%n, %endNode);
+		%neighborTime += getRealTime() - %sT;
+		for (%i = 0; %i < %neighbors.getCount(); %i++) {
+			%neighbor = %neighbors.getObject(%i);
+			%g = %n.G + distTo(%n, %neighbor);
+			if (%openNodes.isMember(%neighbor) && %g < %neighbor.G) {
+				%openNodes.remove(%neighbor);
+			}
+			if (%closedNodes.isMember(%neighbor) && %g < %neighbor.G) {
+				%closedNodes.remove(%neighbor);
+			}
+			if (!%openNodes.isMember(%neighbor) && !%closedNodes.isMember(%neighbor)) {
+				%neighbor.G = %g;
+				%neighbor.F = %neighbor.G + getH(%neighbor, %endNode);
+				%neighbor.parent = %n;
+				%openNodes.add(%neighbor);
+			}
+		}
+	}
+	%totalTime = getRealTime() - %startTime;
+	%neighborPerc = %neighborTime / %totalTime * 100.0;
+	echo("neighborTime" SPC %neighborTime SPC %neighborPerc @ "%" SPC "totalTime" SPC %totalTime);
+		
+	%nodePath = new SimSet();
+	%n = %endNode;
+	%nodePath.add(%n);
+	while (isObject(%n.parent)) {
+		%nodePath.add(%n.parent);
+		%n = %n.parent;
+	}
 	
-	// reverseSimSet(%nodePath);
+	reverseSimSet(%nodePath);
 	
-	// %this.drawNodePath(%nodePath);
+	%this.drawNodePath(%nodePath);
 }
 
 function SearchTest::getNeighbors(%this, %from, %endNode)
 {
+	// if (isObject(%from.neighbors)) {
+		// %neighbors = %from.neighbors;
+	// } else {
+		// %from.neighbors = %this.map.getNeighbors(%from);
+		// %neighbors = %from.neighbors;
+	// }
 	%neighbors = %this.map.getNeighbors(%from);
 	%isVisible = %this.map.lineConnects(%from, %endNode);
 	if (%isVisible) %neighbors.add(%endNode);

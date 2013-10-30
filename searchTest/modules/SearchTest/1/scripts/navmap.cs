@@ -114,14 +114,20 @@ function NavMap::getAllQuadsAt(%this, %node)
 function NavMap::getNeighbors(%this, %node)
 {
 	if (!isObject(%node)) echo("node is missing from NavMap::getNeighbors");
-	
-	echo("n" SPC %node.pos);
+
+	if (!isObject(%node.neighbors)) %node.neighbors = %this.calcNeighbors(%node);
+	return %node.neighbors;
+}
+
+function NavMap::calcNeighbors(%this, %node)
+{
+	if (!isObject(%node)) echo("node is missing from NavMap::calcNeighbors");
 
 	%visibleQuads = new SimSet();
-	%neighbors = new SimSet();
+	%neighbors = %this.getAdjacentNodes(%node);
 	%quad = %this.getQuadAtNode(%node);
-	if (!isObject(%quad)) %quad = %this.getQuadAt(%node.pos);
 	if (!isObject(%quad)) echo("node isn't in a quad" SPC %node.pos);
+	
 	%this.getVisibleNodes(%node, %quad, %neighbors, %visibleQuads);
 
 	return %neighbors;
@@ -241,19 +247,19 @@ function NavMap::getVisibleNodes(%this, %node, %quad, %nodes, %quads)
 	%quads.add(%quad);
 	
 	%isVisible = false;
-	if ((%nodes.isMember(%quad.nw) || %this.lineConnects(%node, %quad.nw)) && %quad.nw != %node) {
+	if (%quad.nw != %node && (%nodes.isMember(%quad.nw) || %this.lineConnects(%node, %quad.nw))) {
 		%isVisible = true;
 		%nodes.add(%quad.nw);
 	}
-	if ((%nodes.isMember(%quad.ne) || %this.lineConnects(%node, %quad.ne)) && %quad.ne != %node) {
+	if (%quad.ne != %node && (%nodes.isMember(%quad.ne) || %this.lineConnects(%node, %quad.ne))) {
 		%isVisible = true;
 		%nodes.add(%quad.ne);
 	}
-	if ((%nodes.isMember(%quad.sw) || %this.lineConnects(%node, %quad.sw)) && %quad.sw != %node) {
+	if (%quad.sw != %node && (%nodes.isMember(%quad.sw) || %this.lineConnects(%node, %quad.sw))) {
 		%isVisible = true;
 		%nodes.add(%quad.sw);
 	}
-	if ((%nodes.isMember(%quad.se) || %this.lineConnects(%node, %quad.se)) && %quad.se != %node) {
+	if (%quad.se != %node && (%nodes.isMember(%quad.se) || %this.lineConnects(%node, %quad.se))) {
 		%isVisible = true;
 		%nodes.add(%quad.se);
 	}
@@ -265,19 +271,20 @@ function NavMap::getVisibleNodes(%this, %node, %quad, %nodes, %quads)
 	}
 }
 
-function NavMap::getVisibleQuads(%this, %node, %quad, %quads)
+function NavMap::getAdjacentNodes(%this, %node)
 {
-	%quads.add(%quad);
-	if (isObject(%quad.n) && !%quads.isMember(%quad.n) && %this.nodeConnectsToQuad(%node, %quad.n)) %this.getVisibleQuads(%node, %quad.n, %quads);
-	if (isObject(%quad.e) && !%quads.isMember(%quad.e) && %this.nodeConnectsToQuad(%node, %quad.e)) %this.getVisibleQuads(%node, %quad.e, %quads);
-	if (isObject(%quad.s) && !%quads.isMember(%quad.s) && %this.nodeConnectsToQuad(%node, %quad.s)) %this.getVisibleQuads(%node, %quad.s, %quads);
-	if (isObject(%quad.w) && !%quads.isMember(%quad.w) && %this.nodeConnectsToQuad(%node, %quad.w)) %this.getVisiblequads(%node, %quad.w, %quads);
-	return %quads;
-}
+	if (!isObject(%node)) echo("missing node at NavMap::getAdjacentNodes");
 
-function NavMap::nodeConnectsToQuad(%this, %node, %quad)
-{
-	return %this.lineConnects(%node, %quad.nw) || %this.lineConnects(%node, %quad.ne) || %this.lineConnects(%node, %quad.sw) || %this.lineConnects(%node, %quad.se);
+	%nodes = new SimSet();
+	%quads = %this.getAllQuadsAt(%node);
+	for (%i = 0; %i < %quads.getCount(); %i++) {
+		%q = %quads.getObject(%i);
+		if (%q.nw != %node && !%nodes.isMember(%q.nw)) %nodes.add(%q.nw);
+		if (%q.ne != %node && !%nodes.isMember(%q.ne)) %nodes.add(%q.ne);
+		if (%q.sw != %node && !%nodes.isMember(%q.sw)) %nodes.add(%q.sw);
+		if (%q.se != %node && !%nodes.isMember(%q.se)) %nodes.add(%q.se);
+	}
+	return %nodes;
 }
 
 function NavMap::getQuadIntersect(%this, %q, %pQ, %line)
