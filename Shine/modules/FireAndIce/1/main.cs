@@ -122,6 +122,8 @@ function FireAndIce::startGame( %this )
 	%viewTop = $Game::ArenaHeight / 2.0;
 	%viewLow = -%viewTop;
 	mainWindow.setViewLimitOn( %viewLeft SPC %viewLow SPC %viewRight SPC %viewTop );
+	
+	$Game::Kills = 0;
 
 	mainScene.clear();
 	mainScene.setScenePause( false );
@@ -137,7 +139,6 @@ function FireAndIce::startGame( %this )
 	alxStopAll();
 	alxPlay("FireAndIce:GameMusic");
 	
-	$Game::Kills = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -147,7 +148,88 @@ function FireAndIce::startLoseMenu( %this )
 	%this.clearDialogs();
 	Canvas.pushDialog(LoseMenu);
 	LoseStatsTextLabel.setText("You survived" SPC SpawnManager.waveNum SPC "waves, and slaughtered" SPC $Game::Kills SPC "of the ice horde.");
+	
+	if (!isObject($ranks)) {
+		$ranks = new SimSet();
+	}
+	
+	$ranks.add(newRank(getLocalTime(), SpawnManager.waveNum, $Game::Kills));
+	sortByKills($ranks);
+	
+	echo("ranks" SPC $ranks.getCount());
+	
+	for (%i = 0; %i < 8; %i++) {
+		switch (%i) {
+		case 0:
+			%label = Rank1Label;
+		
+		case 1:
+			%label = Rank2Label;
+		
+		case 2:
+			%label = Rank3Label;
+			
+		case 3:
+			%label = Rank4Label;
+			
+		case 4:
+			%label = Rank5Label;
+			
+		case 5:
+			%label = Rank6Label;
+			
+		case 6:
+			%label = Rank7Label;
+			
+		case 7:
+			%label = Rank8Label;
+		}
+		
+		if ( %i < $ranks.getCount()) {
+			%r = $ranks.getObject(%i);
+			%labelText = (%i+1) @ ". " @ %r.date SPC "-" SPC %r.kills SPC "kills - wave" SPC %r.wave;
+		} else {
+			%labelText = "";
+		}
+		%label.setText(%labelText);
+	}
 	mainScene.clear();
+}
+
+function sortByKills(%set)
+{
+	%startIdx = 0;
+	while (!isSorted(%set)) {
+		%p = %set.getObject(0);
+		for (%i = 1; %i < %set.getCount(); %i++) {
+			%r = %set.getObject(%i);
+			if (%r.kills > %p.kills) {
+				%set.reOrderChild(%r, %p);
+			} else {
+				%p = %r;
+			}
+		}
+	}
+}
+
+function isSorted(%set)
+{
+	%last = %set.getObject(0).kills;
+	for (%i = 1; %i < %set.getCount(); %i++) {
+		%r = %set.getObject(%i);
+		if (%r.kills > %last) return false;
+		%last = %r.kills;
+	}
+	return true;
+}
+
+function newRank(%date, %wave, %kills)
+{
+	%r = new ScriptObject();
+	%r.date = %date;
+	%r.wave = %wave;
+	%r.kills = %kills;
+	return %r;
 }
 
 //-----------------------------------------------------------------------------
@@ -163,7 +245,6 @@ function FireAndIce::startInfoMenu( %this )
 function FireAndIce::clearDialogs( %this )
 {
 	Canvas.popDialog(LoseMenu);
-	Canvas.popDialog(WinMenu);
 	Canvas.popDialog(MainMenu);
 	Canvas.popDialog(InfoMenu);
 	Canvas.popDialog(ArenaHud);

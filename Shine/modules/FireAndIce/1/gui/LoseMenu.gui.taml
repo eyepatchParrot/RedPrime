@@ -25,6 +25,62 @@
 		text="You survived X waves, and slaughtered N of the ice horde." />
 		
 	<GuiTextCtrl
+		Name="Rank1Label"
+		Profile="LoseTextProfile"
+		Position = "100 130"
+		Extent="760 50"
+		text="1. 10/30 - 100 kills - wave 7" />
+		
+	<GuiTextCtrl
+		Name="Rank2Label"
+		Profile="LoseTextProfile"
+		Position = "100 180"
+		Extent="760 50"
+		text="2. 10/30 - 100 kills - wave 7" />
+		
+	<GuiTextCtrl
+		Name="Rank3Label"
+		Profile="LoseTextProfile"
+		Position = "100 230"
+		Extent="760 50"
+		text="3. 10/30 - 100 kills - wave 7" />
+		
+	<GuiTextCtrl
+		Name="Rank4Label"
+		Profile="LoseTextProfile"
+		Position = "100 280"
+		Extent="760 50"
+		text="4. 10/30 - 100 kills - wave 7" />
+		
+	<GuiTextCtrl
+		Name="Rank5Label"
+		Profile="LoseTextProfile"
+		Position = "100 330"
+		Extent="760 50"
+		text="5. 10/30 - 100 kills - wave 7" />
+		
+	<GuiTextCtrl
+		Name="Rank6Label"
+		Profile="LoseTextProfile"
+		Position = "100 380"
+		Extent="760 50"
+		text="6. 10/30 - 100 kills - wave 7" />
+		
+	<GuiTextCtrl
+		Name="Rank7Label"
+		Profile="LoseTextProfile"
+		Position = "100 430"
+		Extent="760 50"
+		text="7. 10/30 - 100 kills - wave 7" />
+		
+	<GuiTextCtrl
+		Name="Rank8Label"
+		Profile="LoseTextProfile"
+		Position = "100 480"
+		Extent="760 50"
+		text="8. 10/30 - 100 kills - wave 7" />
+		
+	<GuiTextCtrl
 		Name="TapTextLabel"
 		Profile="LoseTextProfile"
 		text="Tap anywhere to return to menu."
