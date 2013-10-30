@@ -48,6 +48,80 @@ function newNavQuadEastOf(%prevQuad, %pos)
 	return %q;
 }
 
+function NavQuad::addToSetIfContains(%this, %node, %set)
+{
+	if (%this.containsNode(%node)) %set.add(%this);
+}
+
+function NavQuad::addNodesToSetUniquely(%this, %set, %sentinel)
+{
+	if (%this.nw != %sentinel && !%set.isMember(%this.nw)) %set.add(%this.nw);
+	if (%this.ne != %sentinel && !%set.isMember(%this.ne)) %set.add(%this.ne);
+	if (%this.sw != %sentinel && !%set.isMember(%this.sw)) %set.add(%this.sw);
+	if (%this.se != %sentinel && !%set.isMember(%this.se)) %set.add(%this.se);
+}
+
+function NavQuad::draw(%this, %selectedQuad, %drawObjs)
+{
+	%qX = %this.getCenterX();
+	%qY = %this.getCenterY();
+	%qW = %this.getW();
+	%qH = %this.getH();
+	%obj = new ShapeVector();
+	%obj.setPosition(%qX SPC %qY);
+	%obj.setSize(%qW / 2.0, %qH / 2.0);
+	%obj.setLineColor("1 1 1 1");
+	if (%selectedQuad == %this) {
+		%obj.setFillColor("0 1 1 0.5");
+	} else {
+		%obj.setFillColor("0 0 1 0.5");
+	}
+	%obj.setFillMode(true);
+	%obj.setPolyPrimitive(4);
+	mainScene.add(%obj);
+	%drawObjs.add(%obj);
+	
+	%oNE = newCircle(%this.ne.pos);
+	mainScene.add(%oNE);
+	%drawObjs.add(%oNE);
+
+	%oSE = newCircle(%this.se.pos);
+	mainScene.add(%oSE);
+	%drawObjs.add(%oSE);
+	
+	%oNW = newCircle(%this.nw.pos);
+	mainScene.add(%oNW);
+	%drawObjs.add(%oNW);
+	
+	%oSW = newCircle(%this.sw.pos);
+	mainScene.add(%oSW);
+	%drawObjs.add(%oSW);
+	
+	if (isObject(%this.n)) {
+		%oN = newConnectCircle(%qX SPC (%qY + %qH / 4));
+		mainScene.add(%oN);
+		%drawObjs.add(%oN);
+	}
+	
+	if (isObject(%this.e)) {
+		%oE = newConnectCircle((%qX + %qW / 4) SPC %qY);
+		mainScene.add(%oE);
+		%drawObjs.add(%oE);
+	}
+	
+	if (isObject(%this.s)) {
+		%oS = newConnectCircle(%qX SPC (%qY - %qH / 4));
+		mainScene.add(%oS);
+		%drawObjs.add(%oS);
+	}
+	
+	if (isObject(%this.w)) {
+		%oW = newConnectCircle((%qX - %qW / 4) SPC %qY);
+		mainScene.add(%oW);
+		%drawObjs.add(%oW);
+	}
+}
+
 function newNavQuadWestOf(%prevQuad, %pos)
 {
 	%x = getWord(%pos, 0);

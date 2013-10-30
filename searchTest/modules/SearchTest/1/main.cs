@@ -80,7 +80,13 @@ function SearchTest::create( %this )
 	%this.addRect(-15 SPC 5);
 	%this.addRect(-15 SPC -5);
 	%this.addRect(-15 SPC -15);
-	// %this.add
+	%this.selectRect(-18 SPC -22);
+	%this.connectRect(19 SPC -20);
+}
+
+function changeX(%x)
+{
+	%x.v = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -233,6 +239,7 @@ function SearchTest::addRect(%this, %pos)
 
 function SearchTest::selectRect(%this, %pos)
 {
+	echo("selectRect" SPC %pos);
 	%newSelection = %this.map.getQuadAt(%pos);
 	if (isObject(%newSelection)) {
 		$selectedQuad = %newSelection;
@@ -242,6 +249,7 @@ function SearchTest::selectRect(%this, %pos)
 
 function SearchTest::connectRect(%this, %pos)
 {
+	echo("connectRect" SPC %pos);
 	%otherQuad = %this.map.getQuadAt(%pos);
 	echo("click connect");
 	if (isObject($selectedQuad) && isObject(%otherQuad)) {
@@ -260,10 +268,20 @@ function SearchTest::calculatePath(%this)
 	}
 	
 	// %startNode = newNode(%this.startNode.getPosition());
-	// %endNode = newNode(%this.endNode.getPosition());	
+	// %endNode = newNode(%this.endNode.getPosition());
+	// %this.getNeighbors(%startNode, %endNode);
+	// echo("start time");
 	// %sT = getRealTime();
 	// for (%i = 0; getRealTime() - %sT < 1000; %i++) {
 		// %this.getNeighbors(%startNode, %endNode);
+	// }
+	// %dT = getRealTime() - %sT;
+	// %aT = %dT / %i;
+	// echo("neighbor average" SPC %aT SPC "total" SPC %dT);
+		
+	// %sT = getRealTime();
+	// for (%i = 0; getRealTime() - %sT < 1000; %i++) {
+		// %this.map.getAdjacentNodes(%startNode);
 	// }
 	// %dT = getRealTime() - %sT;
 	// %aT = %dT / %i;
@@ -292,9 +310,7 @@ function SearchTest::calculatePath(%this)
 		%closedNodes.add(%n);
 		%openNodes.remove(%n);
 		
-		%sT = getRealTime();
 		%neighbors = %this.getNeighbors(%n, %endNode);
-		%neighborTime += getRealTime() - %sT;
 		for (%i = 0; %i < %neighbors.getCount(); %i++) {
 			%neighbor = %neighbors.getObject(%i);
 			%g = %n.G + distTo(%n, %neighbor);
@@ -338,6 +354,7 @@ function SearchTest::getNeighbors(%this, %from, %endNode)
 		// %neighbors = %from.neighbors;
 	// }
 	%neighbors = %this.map.getNeighbors(%from);
+	// %neighbors = new SimSet();
 	%isVisible = %this.map.lineConnects(%from, %endNode);
 	if (%isVisible) %neighbors.add(%endNode);
 	

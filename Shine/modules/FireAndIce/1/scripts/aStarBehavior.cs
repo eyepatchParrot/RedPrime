@@ -51,56 +51,45 @@ function AStarBehavior::getPathBetween(%this, %startNode, %endNode)
 	%startNode.G = 0;
 	%startNode.F = %startNode.G + getH(%startNode, %endNode);
 	
-	// %neighbors = %this.getNeighbors(%startNode, %endNode);
-	// for (%i = 0; %i < %neighbors.getCount(); %i++) {
-		// %neighbor = %neighbors.getObject(%i);
-		// %path = new SimSet();
-		// %path.add(%startNode);
-		// %path.add(%neighbor);
-		// drawNodePath(%path);
-	// }
-	
-	echo("*** find path ***");
 	%totalTimeStart = getRealTime();
-	while (%openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode)) {
-		echo("numOpenNodes :" SPC %openNodes.getCount());
+	$totalCheapTime = 0;
+	$totalNeighborTime = 0;
+	$totalTickTime = 0;
+	$totalCondTime = 0;
+	%isOk = %openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode);
+	while (%isOk) {
+		%sT = getRealTime();
 		%n = findCheapestNode(%openNodes);
-		echo("** n" SPC %n.pos SPC "n.parent" SPC %n.parent.pos SPC "**");
 		%closedNodes.add(%n);
 		%openNodes.remove(%n);
+		$totalCheapTime += getRealTime() - %sT;
 		
 		%sT = getRealTime();
 		%neighbors = %this.getNeighbors(%n, %endNode);
-		%eT = getRealTime();
-		%neighborTime += %eT - %sT;
-		echo("numNeighbors :" SPC %neighbors.getCount());
-		for (%i = 0; %i < %neighbors.getCount(); %i++) {
-			%neighbor = %neighbors.getObject(%i);
-			%g = %n.G + distTo(%n, %neighbor);
-			if (%openNodes.isMember(%neighbor) && %g < %neighbor.G) {
-				%openNodes.remove(%neighbor);
-			}
-			if (%closedNodes.isMember(%neighbor) && %g < %neighbor.G) {
-				%closedNodes.remove(%neighbor);
-			}
-			if (!%openNodes.isMember(%neighbor) && !%closedNodes.isMember(%neighbor)) {
-				%neighbor.G = %g;
-				%neighbor.F = %neighbor.G + getH(%neighbor, %endNode);
-				%neighbor.parent = %n;
-				%openNodes.add(%neighbor);
-
-			}
-		}
+		$totalNeighborTime += getRealTime() - %sT;
+		
+		%sT = getRealTime();
+		%neighbors.callOnChildren(tickAStar, %openNodes, %closedNodes, %n);
+		$totalTickTime += getRealTime() - %sT;
+		
+		%sT = getRealTime();
+		%isOk = %openNodes.getCount() > 0 && !%closedNodes.isMember(%endNode);
+		$totalCondTime += getRealTime() - %sT;
 	}
-	%totalTime = getRealTime() - %totalTimeStart;
-	%neighborPerc = %neighborTime / %totalTime * 100.0;
-	echo("neighborTime" SPC %neighborTime SPC %neighborPerc @ "%" SPC "totalTime" SPC %totalTime);
+	%dT = getRealTime() - %totalTimeStart;
+	$totalTime = %dT;
+	%cheapPerc = $totalCheapTime / $totalTime * 100.0;
+	%tickPerc = $totalTickTime / $totalTime * 100.0;
+	%neighborPerc = $totalNeighborTime / $totalTime * 100.0;
+	%condPerc = $totalCondtime / $totalTime * 100.0;
+	%linePerc = $totalLineTime / $totalTime * 100.0;
+	%calcPerc = $totalCalcTime / $totalTime * 100.0;
+	echo("dT" SPC %dT SPC "cheap" SPC $totalCheapTime SPC "neighbor" SPC $totalNeighborTime SPC "tick" SPC $totalTickTime SPC "cond" SPC $totalCondTime SPC "line%" SPC %linePerc SPC "calc%" SPC %calcPerc SPC "totalTime" SPC $totalTime);
 	
 	%nodePath = new SimSet();
 	%n = %endNode;
 	%nodePath.add(%n);
 	while (isObject(%n.parent)) {
-		echo("add node" SPC %n.pos);
 		%nodePath.add(%n.parent);
 		%n = %n.parent;
 	}
@@ -110,14 +99,36 @@ function AStarBehavior::getPathBetween(%this, %startNode, %endNode)
 	return %nodePath;
 }
 
+function NavNode::tickAStar(%this, %openNodes, %closedNodes, %parent)
+{
+	if (!isObject(%openNodes)) echo("no openNodes in AStarBehavior::tickAStar");
+	if (!isObject(%closedNodes)) echo("no closedNodes in AStarBehavior::tickAStar");
+
+	%g = %parent.G + distTo(%parent, %this);
+	if (%openNodes.isMember(%this) && %g < %this.G) {
+		%openNodes.remove(%this);
+	}
+	if (%closedNodes.isMember(%this) && %g < %this.G) {
+		%closedNodes.remove(%this);
+	}
+	if (!%openNodes.isMember(%this) && !%closedNodes.isMember(%this)) {
+		%this.G = %g;
+		%this.F = %this.G + getH(%this, %endNode);
+		%this.parent = %parent;
+		%openNodes.add(%this);
+	}
+}
+
 function AStarBehavior::getNeighbors(%this, %n, %endNode)
 {
-	if (!isObject(%this.navMap)) {
-		echo("no map!");
-	}
+	if (!isObject(%this.navMap)) echo("no map!");
+	if (!isObject(%n)) echo("no n in AStarBehavior::getNeighbors");
+	if (!isObject(%endNode)) echo("no endNOde in AStarBehavior::getNeighbors");
 
 	%neighbors = %this.navMap.getNeighbors(%n);
+	%sT = getRealTime();
 	%isVisible = %this.navMap.lineConnects(%n, %endNode);
+	$totalLineTime = getRealTime() - %sT;
 	if (%isVisible) %neighbors.add(%endNode);
 	
 	return %neighbors;
