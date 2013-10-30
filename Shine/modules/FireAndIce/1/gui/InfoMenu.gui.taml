@@ -2,12 +2,11 @@
 	Name="InfoMenu"
 	Profile="GuiDefaultProfile" >
 	
-	<GuiImageButtonCtrl
+	<GuiButtonCtrl
 		Name="InfoMenuBackground"
-		Profile="GuiDefaultProfile"
+		Profile="GuiBgButtonProfile"
 		Position="0 0"
 		Extent="960 640"
-		NormalImage="FireAndIce:redMenuImage"
 		Command="FireAndIce.startMainMenu();"
 		Visible="1" />
 		
@@ -16,11 +15,7 @@
 		Profile="LoseTextProfile"
 		Position="100 50"
 		Extent="760 520"
-		text = "Use WASD to move, and click to shoot. Hold down your mouse button to shoot continuously.<br>
-		'Red...you must help stop the Ice invasion. There is no time to grieve your wife and daughter. They will find their way to the crystal shores of Sailum and will be waiting for you. Valnias has nearly pushed us out of Albus city. we cannot let him have our lands! The Astra Guardian is going to end this war...we just have to hold out until he arrives. Head to the plains to the north. Try and kill as many of the bastards as you can.'
-		'I will do what is needed, Church...oh and one other thing...'
-		'Don't ever mention my family again...'
-		'May your swords be broken and your guns empty before you reach the shores of Sailum, Macto Reddington...'" />
+		text = "Use WASD to move, and click to shoot. Hold down your mouse button to shoot continuously." />
 		
 	<GuiTextCtrl
 		Name="InfoTapTextLabel"

@@ -175,6 +175,15 @@ if (!isObject(BlueButtonProfile)) new GuiControlProfile (BlueButtonProfile : Gui
 
 //-----------------------------------------------------------------------------
 
+if (!isObject(GuiBgButtonProfile)) new GuiControlProfile (GuiBgButtonProfile : GuiDefaultProfile)
+{
+	opaque = true;
+	fillColor = DimGray;
+	border = 3;
+};
+
+//-----------------------------------------------------------------------------
+
 if ( !isObject(HudDialogProfile) ) new GuiControlProfile (HudDialogProfile : GuiDefaultProfile)
 {
 	modal = false;
