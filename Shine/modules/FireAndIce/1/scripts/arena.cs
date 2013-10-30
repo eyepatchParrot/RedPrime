@@ -2,6 +2,13 @@ function createArena()
 {
 	createBackground();
 	createBoundaries();
+
+	%fg = new Sprite();
+	%fg.setPosition(0 SPC 0);
+	%fg.setSize($Game::ArenaWidth SPC $Game::ArenaHeight);
+	%fg.setSceneLayer(0);
+	%fg.setImage("FireAndIce:trees");
+	mainScene.add( %fg );
 }
 
 function createBackground()
