@@ -54,7 +54,6 @@ function FireAndIce::create( %this )
 	%this.add( TamlRead("./gui/MainMenu.gui.taml") );
 	%this.add( TamlRead("./gui/WinMenu.gui.taml") );
 	%this.add( TamlRead("./gui/InfoMenu.gui.taml") );
-	%this.add( TamlRead("./gui/CreditsMenu.gui.taml") );
 	
 	// We need a main "Scene" we can use as our game world.  The place where sceneObjects play.
     // Give it a global name "mainScene" since we may want to access it directly in our scripts.
@@ -74,8 +73,8 @@ function FireAndIce::create( %this )
 	
 	%this.turnSoundOn( $Game::soundOn );
 	
-	// %this.startMainMenu();
-	%this.startGame();
+	%this.startMainMenu();
+	// %this.startGame();
 }
 
 //-----------------------------------------------------------------------------
@@ -174,14 +173,6 @@ function FireAndIce::startInfoMenu( %this )
 {
 	%this.clearDialogs();
 	Canvas.pushDialog(InfoMenu);
-}
-
-//-----------------------------------------------------------------------------
-
-function FireAndIce::startCreditsMenu( %this )
-{
-	%this.clearDialogs();
-	Canvas.pushDialog(CreditsMenu);
 }
 
 //-----------------------------------------------------------------------------

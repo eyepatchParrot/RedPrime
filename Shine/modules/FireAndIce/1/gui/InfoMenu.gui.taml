@@ -8,7 +8,7 @@
 		Position="0 0"
 		Extent="960 640"
 		NormalImage="FireAndIce:redMenuImage"
-		Command="FireAndIce.startCreditsMenu();"
+		Command="FireAndIce.startMainMenu();"
 		Visible="1" />
 		
 	<GuiMLTextCtrl
