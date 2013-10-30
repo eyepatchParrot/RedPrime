@@ -29,7 +29,7 @@ function createPlayerCharacter()
 	%pc.addBehavior(%moveAnim);
 	%pc.moveAnimBehavior = %moveAnim;
 	
-	%pc.setShootAnim( false );
+	%pc.setAnim( false );
 	
 	%pc.targetPosition = "0 0";
 	%pc.shotFreq = 500;
@@ -72,23 +72,33 @@ function PlayerCharacter::shootOneBullet( %this, %angleOffset )
 {
 	%angle = Vector2AngleToPoint(%this.Position, %this.targetPosition);
 	createBulletAt(%this.Position, %angle + %angleOffset);
-	%this.setShootAnim( true );
+	%this.setAnim( true );
 	cancel( %this.shootAnimSchedule );
-	%this.shootAnimSchedule = %this.schedule( 32, setShootAnim, false );
+	%this.shootAnimSchedule = %this.schedule( 32, setAnim, false );
 	%this.rotateTo(%angle + 180, %this.turnSpeed);
 }
 
-function PlayerCharacter::setShootAnim( %this, %on )
+function PlayerCharacter::setAnim( %this, %isShooting )
 {
 	if ( %on )
 	{
-		%idleAnim = "FireAndIce:redIdleShootAnim";
-		%walkAnim = "FireAndIce:redWalkShootAnim";
+		if ( %this.isWeaponBoosted ) {
+			%idleAnim = "FireAndIce:redIdleShootShotgunAnim";
+			%walkAnim = "FireAndIce:redWalkShootShotgunAnim";
+		} else {
+			%idleAnim = "FireAndIce:redIdleShootAnim";
+			%walkAnim = "FireAndIce:redWalkShootAnim";
+		}
 	}
 	else
 	{
-		%idleAnim = "FireAndIce:redIdleAnim";
-		%walkAnim = "FireAndIce:redWalkAnim";
+		if (%this.isWeaponBoosted) {
+			%idleAnim = "FireAndIce:redIdleShotgunAnim";
+			%walkAnim = "FireAndIce:redWalkShotgunAnim";
+		} else {
+			%idleAnim = "FireAndIce:redIdleAnim";
+			%walkAnim = "FireAndIce:redWalkAnim";
+		}
 	}
 	
 	%this.moveAnimBehavior.idleAnimation = %idleAnim;
@@ -139,6 +149,7 @@ function PlayerCharacter::pickup( %this, %pickup)
 function PlayerCharacter::setWeaponBoosted( %this, %val )
 {
 	%this.isWeaponBoosted = %val;
+	%this.setAnim(false);
 }
 
 function PlayerCharacter::isDead( %this )
