@@ -23,7 +23,7 @@
 // debug amounts of log output
 setLogMode(6);
 // run game from the script files.  don't compile them first
-$Scripts::ignoreDSOs = true;
+$Scripts::ignoreDSOs = false;
 
 ModuleDatabase.scanModules( "modules" );
 ModuleDatabase.LoadExplicit( "FireAndIce" );
