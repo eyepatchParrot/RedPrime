@@ -48,7 +48,6 @@ function FireAndIce::create( %this )
 	%this.add( TamlRead("./gui/ArenaHud.gui.taml") );
 	%this.add( TamlRead("./gui/LoseMenu.gui.taml") );
 	%this.add( TamlRead("./gui/MainMenu.gui.taml") );
-	%this.add( TamlRead("./gui/WinMenu.gui.taml") );
 	%this.add( TamlRead("./gui/InfoMenu.gui.taml") );
 	
 	// We need a main "Scene" we can use as our game world.  The place where sceneObjects play.
@@ -148,16 +147,6 @@ function FireAndIce::startLoseMenu( %this )
 	%this.clearDialogs();
 	Canvas.pushDialog(LoseMenu);
 	LoseStatsTextLabel.setText("You survived" SPC SpawnManager.waveNum SPC "waves, and slaughtered" SPC $Game::Kills SPC "of the ice horde.");
-	mainScene.clear();
-}
-
-//-----------------------------------------------------------------------------
-
-function FireAndIce::startWinMenu( %this )
-{
-	%this.clearDialogs();
-	Canvas.pushDialog(WinMenu);
-	WinStatsTextLabel.setText("You survived" SPC SpawnManager.waveNum SPC "waves, and slaughtered" SPC $Game::Kills SPC "of the ice horde.");
 	mainScene.clear();
 }
 

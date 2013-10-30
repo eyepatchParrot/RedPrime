@@ -40,13 +40,11 @@ function SpawnManager::spawnNextWave(%this)
 	%this.waveNum++;
 	updateHud();
 	
-	%baseNumEnemies = 1;
 	%baseNumEnemies = 5;
 	%baseSpawnTime = 1000;
 	%difficultyInc = 0.1;
 	%difficultyMul = 1 + %difficultyInc * (%this.waveNum - 1);
 	%numEnemies = %baseNumEnemies * %difficultyMul;
-	%numEnemies = 1;
 	%spawnTime = %baseSpawnTime / %difficultyMul;
 	%waveTime = %numEnemies * %spawnTime + 8000;
 	%this.spawnNewWaveAtAllZones( %numEnemies, %spawnTime);

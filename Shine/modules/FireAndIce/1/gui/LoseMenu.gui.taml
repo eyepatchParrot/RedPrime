@@ -2,12 +2,11 @@
 	Name="LoseMenu"
 	Profile="GuiDefaultProfile" >
 	
-	<GuiImageButtonCtrl
+	<GuiButtonCtrl
 		Name="LoseMenuBackground"
-		Profile="GuiDefaultProfile"
+		Profile="GuiBgButtonProfile"
 		Position="0 0"
 		Extent="960 640"
-		NormalImage="FireAndIce:redMenuImage"
 		Command="FireAndIce.startMainMenu();"
 		Visible="1" />
 		
@@ -19,17 +18,9 @@
 		text = "Game over." />
 		
 	<GuiMLTextCtrl
-		Name="LoseTextLabel"
-		Profile="LoseTextProfile"
-		Position="100 90"
-		Extent="760 450"
-		text="'Red?...Red?!!! Red is down! He has joined his loved ones on Sailum's shore...his sacrifice will not be forgotten... We must continue to fight on!'"
-		Visible="1" />
-		
-	<GuiMLTextCtrl
 		Name="LoseStatsTextLabel"
 		Profile="LoseTextProfile"
-		Position="100 540"
+		Position="100 80"
 		Extent="760 50"
 		text="You survived X waves, and slaughtered N of the ice horde." />
 		
