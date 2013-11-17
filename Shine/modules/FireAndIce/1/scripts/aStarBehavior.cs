@@ -31,7 +31,8 @@ function AStarBehavior::tick(%this)
 		// %openNodes = new SimSet();
 		// %closedNode = new SimSet();
 		
-		%path = %this.getPathBetween(%startNode, %endNode);
+		%path = %this.pollNodeBetween(%startNode, %endNode);
+		// %path = %this.getPathBetween(%startNode, %endNode);
 		
 		%this.clearDrawObjs();
 		
@@ -39,6 +40,37 @@ function AStarBehavior::tick(%this)
 	}
 
 	%this.tickEvent = %this.schedule(%this.freq, tick);
+}
+
+function AStarBehavior::pollNodeBetween(%this, %startNode, %endNode)
+{
+	%totalTimeStart = getRealTime();
+	
+	%neighbors = %this.getNeighbors(%startNode, %endNode);
+	for (%i = 0; %i < %neighbors.getCount(); %i++) {
+		%curN = %neighbors.getObject(%i);
+		%curDist = distTo(%endNode, %curN);
+		if (%curDist < %minDist || %i == 0) {
+			%minDist = %curDist;
+			%n = %curN;
+		}
+	}
+	%n.parent = %startNode;
+	%endNode.parent = %n;
+	%dT = getRealTime() - %totalTimeStart;
+	echo("total time :" SPC %dT);
+	
+	%nodePath = new SimSet();
+	%n = %endNode;
+	%nodePath.add(%n);
+	while (isObject(%n.parent)) {
+		%nodePath.add(%n.parent);
+		%n = %n.parent;
+	}
+	
+	reverseSimSet(%nodePath);
+	
+	return %nodePath;
 }
 
 function AStarBehavior::getPathBetween(%this, %startNode, %endNode)

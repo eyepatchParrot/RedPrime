@@ -86,6 +86,16 @@ function projectPos(%startPos, %angle, %distance)
 	return %x SPC %y;
 }
 
+function SimSet::concat(%setB)
+{
+	%setB.callOnChildren(addTo, %setA);
+}
+
+function SimObject::addTo(%this, %set)
+{
+	%set.add(%this);
+}
+
 function reverseSimSet(%set)
 {
 	for (%i = 0; %i < %set.getCount(); %i++) {
