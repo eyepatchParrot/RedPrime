@@ -277,6 +277,7 @@ function NavQuad::containsNode(%this, %node)
 	return %node == %this.nw || %node == %this.ne || %node == %this.sw || %node == %this.se || %this.contains(%node.pos);
 }
 
+// WARNING: RECURSIVE CREATIVITY PRESENT
 function NavQuad::getQuads(%this, %quads)
 {
 	if (!isObject(%quads)) {

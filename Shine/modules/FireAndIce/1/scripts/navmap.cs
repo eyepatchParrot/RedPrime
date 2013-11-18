@@ -102,8 +102,21 @@ function NavMap::getQuadAtNode(%this, %node)
 function NavMap::getAllQuadsAt(%this, %node)
 {
 	%quads = %this.getQuads();
+	
 	%adjQuads = new SimSet();
-	%quads.callOnChildren(addToSetIfContains, %node, %adjQuads);
+	
+	// echo("start add");
+	
+	%sT = getRealTime();
+	for (%i = 0; %i < %quads.getCount(); %i++) {
+		%q = %quads.getObject(%i);
+		if (%q.containsNode(%node)) %adjQuads.add(%q);
+	}
+	// %quads.callOnChildren(addToSetIfContains, %node, %adjQuads);
+	%eT = getRealTime();
+	%addTime = %eT - %sT;
+	
+	if (%addTime > 0) echo("  addTime" SPC %addTime);
 	
 	return %adjQuads;
 }
@@ -157,13 +170,13 @@ function NavMap::flatGetNeighbors(%this, %node)
 		
 		if (%quadIsVisible) {
 			%n = %curQuad.n;
-			if (isObject(%n) && !%closedQuads.isMember(%n)) %openQuads.add(%n);
+			if (isObject(%n) && !%closedQuads.isMember(%n) && !%openQuads.isMember(%n)) %openQuads.add(%n);
 			%n = %curQuad.e;
-			if (isObject(%n) && !%closedQuads.isMember(%n)) %openQuads.add(%n);
+			if (isObject(%n) && !%closedQuads.isMember(%n) && !%openQuads.isMember(%n)) %openQuads.add(%n);
 			%n = %curQuad.s;
-			if (isObject(%n) && !%closedQuads.isMember(%n)) %openQuads.add(%n);
+			if (isObject(%n) && !%closedQuads.isMember(%n) && !%openQuads.isMember(%n)) %openQuads.add(%n);
 			%n = %curQuad.w;
-			if (isObject(%n) && !%closedQuads.isMember(%n)) %openQuads.add(%n);
+			if (isObject(%n) && !%closedQuads.isMember(%n) && !%openQuads.isMember(%n)) %openQuads.add(%n);
 		}
 	}
 	
@@ -177,10 +190,14 @@ function NavMap::addVisibleInQuad(%this, %node, %nodes, %quad)
 	if (!isObject(%quad)) echo("quad is missing from NavMap::addVisibleInQuad");
 
 	%isVisible = false;
+	%sT = getRealTime();
 	if (%this.nodeIsVisible(%node, %quad.nw, %nodes)) %isVisible = true;
 	if (%this.nodeIsVisible(%node, %quad.ne, %nodes)) %isVisible = true;
 	if (%this.nodeIsVisible(%node, %quad.sw, %nodes)) %isVisible = true;
 	if (%this.nodeIsVisible(%node, %quad.se, %nodes)) %isVisible = true;
+	%eT = getRealTime();
+	%nodeTime = %eT - %sT;
+	// echo("nodeTime " SPC %nodeTime);
 
 	// if (%quad.nw != %node && (%nodes.isMember(%quad.nw) || %this.lineConnects(%node, %quad.nw))) {
 		// %isVisible = true;
@@ -214,6 +231,7 @@ function NavMap::nodeIsVisible(%this, %a, %b, %visibleNodes) {
 		if (%hasSeenNode) {
 			%isVisible = true;
 		} else {
+			// echo("start lineConnects");
 			%sT = getRealTime();
 			%lineConnects = %this.lineConnects(%a, %b);
 			%eT = getRealTime();
@@ -234,7 +252,13 @@ function NavMap::lineConnects(%this, %a, %b) {
 	if (!isObject(%a)) echo("a is missing from NavMap::lineConnects");
 	if (!isObject(%b)) echo("b is missing from NavMap::lineConnects");
 
+	%sT = getRealTime();
 	%adjQuads = %this.getAllQuadsAt(%a);
+	%eT = getRealTime();
+	%atTime = %eT - %sT;
+	if (%atTime > 0) echo(" atTime  " SPC %atTime);
+	
+	%sT = getRealTime();
 	%t = new ScriptObject();
 	%t.containsNode = false;
 	%adjQuads.callOnChildren(containsNodeSet, %b, %t);
@@ -242,15 +266,27 @@ function NavMap::lineConnects(%this, %a, %b) {
 		// %q = %adjQuads.getObject(%i);
 		// if (%q.containsNode(%b)) return true;
 	// }
+	%eT = getRealTime();
+	%hasTime = %eT - %sT;
+	if (%hasTime > 0) echo(" hasTime " SPC %hasTime);
 	if (%t.containsNode) return true;
 	
+	%sT = getRealTime();
 	%q = %adjQuads.getObject(0);
 	while (!%q.containsNode(%b)) {
 		%intersect = %this.getQuadIntersect(%q, %pQ, %a.pos, %b.pos);
-		if (!isObject(%intersect)) return false;
+		if (!isObject(%intersect)) {
+			%eT = getRealTime();
+			%quadTime = (%eT - %sT);
+			if (%quadTime > 0) echo(" quadTime" SPC %quadTime);
+			return false;
+		}
 		%pQ = %q;
 		%q = %intersect;
 	}
+	%eT = getRealTime();
+	%quadTime = (%eT - %sT);
+	if (%quadTime > 0) echo(" quadTime" SPC %quadTime);
 	return true;
 }
 
@@ -350,7 +386,34 @@ function NavMap::getNodes(%this)
 
 function NavMap::getQuads(%this)
 {
-	return %this.rootQuad.getQuads();
+	%sT = getRealTime();
+	
+	%openQuads = new SimSet();
+	%closedQuads = new SimSet();
+	
+	%openQuads.add(%this.rootQuad);
+	while (%openQuads.getCount() > 0) {
+		%q = %openQuads.getObject(0);
+		%openQuads.remove(%q);
+		%closedQuads.add(%q);
+		
+		%newQ = %q.n;
+		if (isObject(%newQ) && !%closedQuads.isMember(%newQ) && !%openQuads.isMember(%newQ)) %openQuads.add(%newQ);
+		%newQ = %q.e;
+		if (isObject(%newQ) && !%closedQuads.isMember(%newQ) && !%openQuads.isMember(%newQ)) %openQuads.add(%newQ);
+		%newQ = %q.s;
+		if (isObject(%newQ) && !%closedQuads.isMember(%newQ) && !%openQuads.isMember(%newQ)) %openQuads.add(%newQ);
+		%newQ = %q.w;
+		if (isObject(%newQ) && !%closedQuads.isMember(%newQ) && !%openQuads.isMember(%newQ)) %openQuads.add(%newQ);
+	}
+	
+	
+	%eT = getRealTime();
+	%getTime = %eT - %sT;
+	if (%getTime > 0) echo("  getTime" SPC %getTime);
+	
+	return %closedQuads;
+	// return %this.rootQuad.getQuads();
 }
 
 function newNode(%pos)

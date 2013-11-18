@@ -39,6 +39,7 @@ function newCircle(%pos)
 	%obj.setIsCircle(true);
 	return %obj;
 }
+
 function isBetween(%v, %a, %b)
 {
 	%min = mGetMin(%a, %b);
@@ -143,6 +144,7 @@ function getH(%a, %b)
 
 function linesIntersect(%a1, %a2, %b1, %b2)
 {
+	%sT = getRealTime();
 	if (getWord(%b1, 1) == getWord(%b2, 1)) {
 		// flat horizontal
 		%y = getWord(%b1, 1);
@@ -178,6 +180,9 @@ function linesIntersect(%a1, %a2, %b1, %b2)
 	%minY = mGetMax(getMinY(%a1, %a2), getMinY(%b1, %b2)) - 0.1;
 	%maxX = mGetMin(getMaxX(%a1, %a2), getMaxX(%b1, %b2)) + 0.1;
 	%maxY = mGetMin(getMaxY(%a1, %a2), getMaxY(%b1, %b2)) + 0.1;
+	%eT = getRealTime();
+	%crossTime = %eT - %sT;
+	if (%crossTime > 0) echo("  crossTime" SPC %crossTime);
 	return %x >= %minX && %x <= %maxX && %y >= %minY && %y <= %maxY;
 }
 

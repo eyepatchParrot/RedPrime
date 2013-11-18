@@ -157,11 +157,18 @@ function AStarBehavior::getNeighbors(%this, %n, %endNode)
 	if (!isObject(%n)) echo("no n in AStarBehavior::getNeighbors");
 	if (!isObject(%endNode)) echo("no endNOde in AStarBehavior::getNeighbors");
 
+	%sT = getRealTime();
 	%neighbors = %this.navMap.getNeighbors(%n);
+	%eT = getRealTime();
+	%allTime = %eT - %sT;
+	
 	%sT = getRealTime();
 	%isVisible = %this.navMap.lineConnects(%n, %endNode);
-	$totalLineTime = getRealTime() - %sT;
+	%eT = getRealTime();
+	%endTime = %eT - %sT;
 	if (%isVisible) %neighbors.add(%endNode);
+	
+	echo("allTime" SPC %allTime SPC "endTime" SPC %endTime);
 	
 	return %neighbors;
 }
