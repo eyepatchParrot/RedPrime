@@ -41,6 +41,10 @@ function FireAndIce::create( %this )
 	exec("./scripts/faceMouseBehavior.cs");
 	exec("./scripts/moveAnimationBehavior.cs");
 	exec("./scripts/dropPickupBehavior.cs");
+	exec("./scripts/aStarBehavior.cs");
+	exec("./scripts/navmap.cs");
+	exec("./scripts/navquad.cs");
+	exec("./scripts/utility.cs");
 	
 	FireAndIce.add( TamlRead("./gui/ConsoleDialog.gui.taml") );
 	GlobalActionMap.bind( keyboard, "ctrl tilde", toggleConsole );
@@ -116,17 +120,18 @@ function FireAndIce::startGame( %this )
     // Note that a viewport comes with a camera built-in.
     mainWindow.setScene(mainScene);
     mainWindow.setCameraPosition( 0, 0 );
-    mainWindow.setCameraSize( $Game::ScreenWidth, $Game::ScreenHeight );
+    mainWindow.setCameraSize( $Game::ScreenWidth * 2, $Game::ScreenHeight * 2 );
 	%viewRight = $Game::ArenaWidth / 2.0;
 	%viewLeft = -%viewRight;
 	%viewTop = $Game::ArenaHeight / 2.0;
 	%viewLow = -%viewTop;
-	mainWindow.setViewLimitOn( %viewLeft SPC %viewLow SPC %viewRight SPC %viewTop );
+	// mainWindow.setViewLimitOn( %viewLeft SPC %viewLow SPC %viewRight SPC %viewTop );
 	
 	$Game::Kills = 0;
 
 	mainScene.clear();
 	mainScene.setScenePause( false );
+	%this.setNavMap();
 	createArena();
 	createSpawnZones();
 	createPlayerCharacter();
@@ -282,4 +287,181 @@ function FireAndIce::turnSoundOn( %this, %on )
 function FireAndIce::toggleSound( %this )
 {
 	%this.turnSoundOn( !$Game::soundOn );
+}
+
+//-----------------------------------------------------------------------------
+
+function FireAndIce::setNavMap( %this )
+{
+	%halfArenaWidth = $Game::ArenaWidth / 2.0;
+	%zoneX = $Game::ArenaWidth / 2.0 + $Game::ZoneSize / 2.0;
+	%zoneY = $Game::ArenaHeight / 2.0 + $Game::ZoneSize / 2.0;
+	%this.navMap = newMap();
+	
+	%y1 = %zoneY + 1;
+	%y2 = %y1 - 3.25;
+	%y2_2 = 6;
+	%y3 = 3.25;
+	%y4 = 0.5;
+	%y4_2 = -1;
+	%y5 = -3;
+	%y6 = -5.5;
+	%y7 = -%zoneY - 1;
+	
+	%x1 = -%zoneX - 1;
+	%x2 = -%halfArenaWidth / 2.0;
+	%x3 = -7;
+	%x4 = -3;
+	%x5 = 1;
+	%x6 = 2.75;
+	%x7 = 3.5;
+	%x8 = 6;
+	%x9 = 8;
+	%x10 = %zoneX + 1;
+	
+	%left1 = %this.navMap.initAt(%x1 SPC %y1, %x2 SPC %y1, %x1 SPC %y2, %x2 SPC %y2);
+	
+	%x = (%x1 + %x2) / 2.0;
+	%y = %y3;
+	%left2 = %this.navMap.extendTo(%x SPC %y, %left1);
+	
+	%y = %y4;
+	%left3 = %this.navMap.extendTo(%x SPC %y, %left2);
+	
+	%y = %y5;
+	%left4 = %this.navMap.extendTo(%x SPC %y, %left3);
+	
+	%y = %y6;
+	%left5 = %this.navMap.extendTo(%x SPC %y, %left4);
+	
+	%y = %y7;
+	%left6 = %this.navMap.extendTo(%x SPC %y, %left5);
+	
+	// **********
+	// * x = x3 *
+	// **********
+	%x = %x3;
+	%y = (%y4 + %y5) / 2.0;
+	%left4 = %this.navMap.extendTo(%x SPC %y, %left4);
+	
+	// **********
+	// * x = x4 *
+	// **********
+	%x = %x4;
+	%y = (%y3 + %y4) / 2.0;
+	%left3 = %this.navMap.extendTo(%x SPC %y, %left3);
+	// %left3.s = %left4;
+	
+	%y = (%y5 + %y6) / 2.0;
+	%left5 = %this.navMap.extendTo(%x SPC %y, %left5);
+	// %left5.n = %left4;
+	
+	// %left4.n = %left3;
+	// %left4.s = %left5;
+	
+	// **********
+	// * x = x5 *
+	// **********
+	%x = %x5;
+	%y = (%y1 + %y2) / 2.0;
+	%left1 = %this.navMap.extendTo(%x SPC %y, %left1);
+	
+	%y = (%y3 + %y4) / 2.0;
+	%left3 = %this.navMap.extendTo(%x SPC %y, %left3);
+	
+	%y = (%y5 + %y6) / 2.0;
+	%left5 = %this.navMap.extendTo(%x SPC %y, %left5);
+	
+	%left4 = %this.navMap.connect(%left3, %left5);
+	
+	// **********
+	// * x = x6 *
+	// **********
+	%x = %x6;
+	%y = (%y1 + %y2) / 2.0;
+	%left1 = %this.navMap.extendTo(%x SPC %y, %left1);
+	
+	%y = (%y3 + %y4) / 2.0;
+	%left3 = %this.navMap.extendTo(%x SPC %y, %left3);
+	
+	%left2 = %this.navMap.connect(%left1, %left3);
+	
+	// **********
+	// * x = x7 *
+	// **********
+	%x = %x7;
+	%y = (%y3 + %y4) / 2.0;
+	%left3 = %this.navMap.extendTo(%x SPC %y, %left3);
+	
+	%y = (%y4 + %y5) / 2.0;
+	%left4 = %this.navMap.extendTo(%x SPC %y, %left4);
+	
+	%y = (%y5 + %y6) / 2.0;
+	%left5 = %this.navMap.extendTo(%x SPC %y, %left5);
+	
+	// %left3.s = %left4;
+	// %left4.n = %left3;
+	// %left4.s = %left5;
+	// %left5.n = %left4;
+	
+	// **********
+	// * x = x8 *
+	// **********
+	%x = %x8;
+	%y = (%y1 + %y2) / 2.0;
+	%left1 = %this.navMap.extendTo(%x SPC %y, %left1);
+	
+	%y = (%y3 + %y4) / 2.0;
+	%left3 = %this.navMap.extendTo(%x SPC %y, %left3);
+	
+	%x = (%x7 + %x8) / 2.0;
+	%y = %y2_2;
+	%left1_2 = %this.navMap.extendTo(%x SPC %y, %left1);
+	
+	%y = %y4_2;
+	%left3_2 = %this.navMap.extendTo(%x SPC %y, %left3);
+	
+	// %left1_2.w = %left2;
+	// %left2.e = %left1_2;
+	// %left3_2.w = %left4;
+	
+	// **********
+	// * x = x9 *
+	// **********
+	%x = %x9;
+	%y = (%y6 + %y7) / 2.0;
+	%left6 = %this.navMap.extendTo(%x SPC %y, %left6);
+	
+	%y = (%y1 + %y2) / 2.0;
+	%left1 = %this.navMap.extendTo(%x SPC %y, %left1);
+	
+	%y = (%y4 + %y4_2) / 2.0;
+	%left4 = %this.navMap.extendTo(%x SPC %y, %left3_2);
+	
+	%left2 = %this.navMap.connect(%left1, %left4);
+	// %left2.w = %left3;
+	
+	// %left5.s = %left6;
+	// %left5.w.s = %left6;
+	// %left5.w.w.s = %left6;
+	// %left6.n = %left5.w;
+	
+	// ***********
+	// * x = x10 *
+	// ***********
+	%x = %x10;
+	%y = (%y1 + %y2) / 2.0;
+	%left1 = %this.navMap.extendTo(%x SPC %y, %left1);
+	
+	%y = (%y6 + %y7) / 2.0;
+	%left6 = %this.navMap.extendTo(%x SPC %y, %left6);
+	
+	%left5 = %this.navMap.connect(%left1, %left6);
+	
+	// %left5.w = %left3;
+	// %left2.e = %left5;
+	// %left3.e = %left5;
+	// %left4.e = %left5;
+	
+	%this.navMap.draw();
 }
